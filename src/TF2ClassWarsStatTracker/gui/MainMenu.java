@@ -5,7 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class MainMenu extends JPanel {
-    MainMenu() {
+    public MainMenu() {
         super(new GridLayout(4, 1));
         setBorder(new EmptyBorder(20,20,20,20));
         JLabel labMenu = new JLabel("Menu");
@@ -13,7 +13,7 @@ public class MainMenu extends JPanel {
         JButton butTracker = new JButton("Tracker");
         butTracker.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.TRACKER));
         JButton butStats = new JButton("View stats");
-        butTracker.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.VIEW_STATS));
+        butStats.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.VIEW_STATS));
         JButton butExit = new JButton("Exit");
         butExit.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.EXIT));
 

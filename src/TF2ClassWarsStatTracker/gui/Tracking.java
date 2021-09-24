@@ -25,11 +25,12 @@ public class Tracking extends JPanel implements ActionListener {
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
 
+        JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
+
         ArrayList<String> maps = getMaps();
         JComboBox mapDropdownSelect = new JComboBox(maps.toArray());
         mapDropdownSelect.setSelectedIndex(0);
         mapDropdownSelect.addActionListener(this);
-//        mapDropdownSelect.setPreferredSize(new Dimension(100, 30));
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
@@ -53,6 +54,32 @@ public class Tracking extends JPanel implements ActionListener {
         JLabel labBlu = new JLabel("BLU");
         JLabel labRed = new JLabel("RED");
 
+        createMercGrid(panRight);
+
+        setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panRight.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        panRed.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+        add(panMenuBar, BorderLayout.PAGE_START);
+        panMenuBar.add(butBack, BorderLayout.WEST);
+        add(panLeft, BorderLayout.WEST);
+        panLeft.add(panSelectedMapInfo, BorderLayout.LINE_START);
+        panSelectedMapInfo.add(mapDropdownSelect);
+        panLeft.add(panBluVsRed, BorderLayout.PAGE_END);
+        panBluVsRed.add(panBlu, BorderLayout.WEST);
+        panBlu.add(labBlu, BorderLayout.NORTH);
+        panBlu.add(panBluClassSelect, BorderLayout.CENTER);
+        panBlu.add(labSelectedBluMerc, BorderLayout.SOUTH);
+        panBluVsRed.add(panRed, BorderLayout.EAST);
+        panRed.add(labRed, BorderLayout.NORTH);
+        panRed.add(panRedClassSelect, BorderLayout.CENTER);
+        panRed.add(labSelectedRedMerc, BorderLayout.SOUTH);
+        add(panRight, BorderLayout.EAST);
+    }
+
+    private void createMercGrid(JComponent parent) {
         JPanel panMercGrid = new JPanel(new GridLayout(10,10));
         for (int i=0; i<10; i++) {
             for (int j=0; j<10; j++) {
@@ -72,28 +99,7 @@ public class Tracking extends JPanel implements ActionListener {
                 panMercGrid.add(gridElement);
             }
         }
-
-        setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panRight.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        panRed.setBorder(BorderFactory.createLineBorder(Color.RED));
-
-        add(panMenuBar, BorderLayout.PAGE_START);
-        panMenuBar.add(butBack, BorderLayout.WEST);
-        add(panLeft, BorderLayout.WEST);
-        panLeft.add(mapDropdownSelect, BorderLayout.CENTER);
-        panLeft.add(panBluVsRed, BorderLayout.SOUTH);
-        panBluVsRed.add(panBlu, BorderLayout.WEST);
-        panBlu.add(labBlu, BorderLayout.NORTH);
-        panBlu.add(panBluClassSelect, BorderLayout.CENTER);
-        panBlu.add(labSelectedBluMerc, BorderLayout.SOUTH);
-        panBluVsRed.add(panRed, BorderLayout.EAST);
-        panRed.add(labRed, BorderLayout.NORTH);
-        panRed.add(panRedClassSelect, BorderLayout.CENTER);
-        panRed.add(labSelectedRedMerc, BorderLayout.SOUTH);
-        add(panRight, BorderLayout.EAST);
-        panRight.add(panMercGrid, BorderLayout.CENTER);
+        parent.add(panMercGrid, BorderLayout.CENTER);
     }
 
     private ArrayList<String> getMaps() {
@@ -117,7 +123,7 @@ public class Tracking extends JPanel implements ActionListener {
     }
 
     public static void reloadStats() {
-
+        Print.timestamp("Feature not implemented.");
     }
 
     @Override

@@ -1,4 +1,8 @@
-package TF2ClassWarsStatTracker.gui;
+package TF2ClassWarsStatTracker;
+
+import TF2ClassWarsStatTracker.gui.MainMenu;
+import TF2ClassWarsStatTracker.gui.Tracking;
+import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 
@@ -39,6 +43,7 @@ public class Start {
     }
 
     public static void exit() {
+        Print.timestamp("Exiting program...");
         frame.dispose();
     }
 }
