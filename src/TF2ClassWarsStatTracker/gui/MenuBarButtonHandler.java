@@ -1,5 +1,7 @@
 package TF2ClassWarsStatTracker.gui;
 
+import TF2ClassWarsStatTracker.Start;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
