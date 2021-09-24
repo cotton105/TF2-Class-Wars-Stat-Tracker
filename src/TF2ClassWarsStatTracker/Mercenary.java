@@ -4,6 +4,10 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Mercenary {
+    public static final int
+            SCOUT = 0, SOLDIER = 1, PYRO = 2,
+            DEMOMAN = 3, HEAVY = 4, ENGINEER = 5,
+            MEDIC = 6, SNIPER = 7, SPY = 8;
     private final int team, id;
     private Map<Integer, Integer> winsOverMerc;
 
@@ -15,7 +19,7 @@ public class Mercenary {
     }
 
     private void loadWins() {
-        winsOverMerc.put(0, 10);
-        winsOverMerc.put(1, 5);
+//        winsOverMerc.put(0, 10);
+//        winsOverMerc.put(1, 5);
     }
 }
