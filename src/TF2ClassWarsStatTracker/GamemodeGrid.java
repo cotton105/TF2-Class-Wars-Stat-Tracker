@@ -5,7 +5,7 @@ public class GamemodeGrid {
     private Integer[][][] mercenaryWins;  // [BLU Mercenary] [RED Mercenary] [{BLU Wins, RED Wins}]
     private final int gamemode;
 
-    GamemodeGrid(int gamemode) {
+    public GamemodeGrid(int gamemode) {
         this.gamemode = gamemode;
         mercenaryWins = new Integer[9][9][2];
     }

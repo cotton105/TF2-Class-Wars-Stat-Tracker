@@ -1,7 +1,15 @@
 package TF2ClassWarsStatTracker;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 public class GameMap {
-    private Map<Integer, GamemodeGrid> Gamemodes;
+    private ArrayList<GamemodeGrid> gamemodeGrids;
+
+    public GameMap() {
+        gamemodeGrids = new ArrayList<>();
+    }
+
+    public void addGamemodeGrid(GamemodeGrid grid) {
+        gamemodeGrids.add(grid);
+    }
 }
