@@ -1,19 +1,23 @@
 package TF2ClassWarsStatTracker.gui;
 
-import TF2ClassWarsStatTracker.util.FileHandler;
-import TF2ClassWarsStatTracker.util.Print;
+import TF2ClassWarsStatTracker.game.GameMap;
+import TF2ClassWarsStatTracker.util.Calculation;
 import TF2ClassWarsStatTracker.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Tracking extends JPanel implements ActionListener {
-    private static int selectedMap;
+    private static final Color
+            BLU_COLOR = new Color(171,203,255),
+            RED_COLOR = new Color(255,125,125);
+    private static String selectedMap, selectedBluMerc, selectedRedMerc;
+    private static int selectedGameMode = 0;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
+    private static JPanel panMercenaryGrid;
 
     public Tracking() {
         super(new BorderLayout());
@@ -27,10 +31,13 @@ public class Tracking extends JPanel implements ActionListener {
 
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
 
-        ArrayList<String> maps = getMaps();
-        JComboBox mapDropdownSelect = new JComboBox(maps.toArray());
+        ArrayList<GameMap> maps = new ArrayList<>(GameMap.gameMapsFromJSON());
+        ArrayList<String> mapNames = new ArrayList<>();
+        for (GameMap map : maps)
+            mapNames.add(map.getMapName());
+        JComboBox mapDropdownSelect = new JComboBox(mapNames.toArray());
         mapDropdownSelect.setSelectedIndex(0);
-        mapDropdownSelect.addActionListener(this);
+        mapDropdownSelect.addItemListener(new MapDropdownHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
@@ -80,39 +87,29 @@ public class Tracking extends JPanel implements ActionListener {
     }
 
     private void createMercGrid(JComponent parent) {
-        JPanel panMercGrid = new JPanel(new GridLayout(10,10));
+        panMercenaryGrid = new JPanel(new GridLayout(10,10));
         for (int i=0; i<10; i++) {
             for (int j=0; j<10; j++) {
                 JComponent gridElement;
                 if (i == 0 && j > 0) {  // BLU mercenaries (first row)
                     gridElement = new JLabel(Constants.MERCENARY[j-1]);
+                    gridElement.setBackground(BLU_COLOR);
                 } else if (i == 0) {
                     gridElement = new JLabel("RED \\ BLU");
                 } else if (j == 0) {  // RED mercenaries (first column)
                     gridElement = new JLabel(Constants.MERCENARY[i-1]);
+                    gridElement.setBackground(RED_COLOR);
                 } else {  // Add button to select relevant match-up on the left panel
                     gridElement = new JButton("X");
                     gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(j-1, i-1));
                 }
+                gridElement.setOpaque(true);
                 gridElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 gridElement.setPreferredSize(new Dimension(65, 65));
-                panMercGrid.add(gridElement);
+                panMercenaryGrid.add(gridElement);
             }
         }
-        parent.add(panMercGrid, BorderLayout.CENTER);
-    }
-
-    private ArrayList<String> getMaps() {
-        ArrayList<String> mapList = null;
-        try {
-            mapList = new ArrayList<>(FileHandler.readTextFileLines(FileHandler.MAPS));
-            Print.commaSeparated(mapList, true);
-        }
-        catch (IOException ex) {
-            Print.timestamp(String.format("ERR %s is missing: %s", FileHandler.MAPS, ex));
-            ex.printStackTrace();
-        }
-        return mapList;
+        parent.add(panMercenaryGrid, BorderLayout.CENTER);
     }
 
     static void setSelectedMercenary(int team, int mercenary) {
@@ -122,8 +119,40 @@ public class Tracking extends JPanel implements ActionListener {
             labSelectedRedMerc.setText(Constants.MERCENARY[mercenary]);
     }
 
-    public static void reloadStats() {
-        Print.timestamp("Feature not implemented.");
+    static void setSelectedMap(String mapName) {
+        selectedMap = mapName;
+        reloadGrid();
+    }
+
+    static void reloadGrid() {
+//        Print.timestamp("Feature not implemented.");
+//        panMercenaryGrid = new JPanel(new GridLayout(10,10));
+        panMercenaryGrid.removeAll();
+        GameMap map = GameMap.gameMapFromJSON(selectedMap);
+        for (int row=0; row<10; row++) {
+            for (int column=0; column<10; column++) {
+                JComponent gridElement;
+                if (row == 0 && column > 0) {  // BLU mercenaries (first row)
+                    gridElement = new JLabel(Constants.MERCENARY[column-1]);
+                    gridElement.setBackground(BLU_COLOR);
+                } else if (row == 0) {
+                    gridElement = new JLabel("RED \\ BLU");
+                } else if (column == 0) {  // RED mercenaries (first column)
+                    gridElement = new JLabel(Constants.MERCENARY[row-1]);
+                    gridElement.setBackground(RED_COLOR);
+                } else {  // Add button to select relevant match-up on the left panel
+                    int[] matchupScores = map.getGameModeGrids().get(selectedGameMode).getMercenaryWins()[row][column];
+                    float ratioBias = Calculation.getRatioBias(matchupScores[0], matchupScores[1]);
+                    gridElement = new JButton(String.format("%.2f", ratioBias));
+                    gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
+                }
+                gridElement.setOpaque(true);
+                gridElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                gridElement.setPreferredSize(new Dimension(65, 65));
+                panMercenaryGrid.add(gridElement);
+            }
+        }
+//        parent.add(panMercenaryGrid, BorderLayout.CENTER);
     }
 
     @Override

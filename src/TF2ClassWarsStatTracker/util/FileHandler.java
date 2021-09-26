@@ -1,22 +1,14 @@
 package TF2ClassWarsStatTracker.util;
 
-import TF2ClassWarsStatTracker.GameMap;
 import com.google.gson.*;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class FileHandler {
-    public static final String MAPS = "/maps.txt";
+    public static final String MAPS_JSON = "/maps.json";
 
     public static ArrayList<String> readTextFileLines(String filename) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
@@ -34,7 +26,7 @@ public class FileHandler {
         }
         return lines;
     }
-
+/*
     public static void readXLFile(String filename) {
         try {
             File file = new File(filename);
@@ -53,12 +45,13 @@ public class FileHandler {
             ex.printStackTrace();
         }
     }
+*/
 
     public static void convertToJSONFile(Object obj, String filename) {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
         Gson gson = builder.create();
-        try (PrintWriter pw = new PrintWriter(filename + ".json")) {
+        try (PrintWriter pw = new PrintWriter(filename)) {
             gson.toJson(obj, pw);
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -80,7 +73,7 @@ public class FileHandler {
 
     public static List<File> getFilesInDirectory(File directory) {
         List<File> fileList = new ArrayList<>();
-        for (File file : directory.listFiles()) {
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isDirectory())
                 fileList.addAll(getFilesInDirectory(file));
             else

@@ -43,7 +43,7 @@ public class Start {
     }
 
     public static void exit() {
-        Print.timestamp("Exiting program...");
+        Print.timestamp("Exiting tracker program...");
         frame.dispose();
     }
 }

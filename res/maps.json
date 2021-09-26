@@ -1,7 +1,7 @@
 [
   {
     "mapName": "cp_assault",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -1736,7 +1736,7 @@
   },
   {
     "mapName": "cp_balloon_race_v11",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -3471,7 +3471,7 @@
   },
   {
     "mapName": "cp_dust2_fx",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -5206,7 +5206,7 @@
   },
   {
     "mapName": "cp_dustbowl",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -6941,7 +6941,7 @@
   },
   {
     "mapName": "cp_dustbowl_forest",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -8676,7 +8676,7 @@
   },
   {
     "mapName": "cp_dustbowl_unlimited_v5",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -10411,7 +10411,7 @@
   },
   {
     "mapName": "cp_dustbowl_winter",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -12146,7 +12146,7 @@
   },
   {
     "mapName": "cp_firewatch_b4",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -13881,7 +13881,7 @@
   },
   {
     "mapName": "cp_helms_deep_fx",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -15616,7 +15616,7 @@
   },
   {
     "mapName": "ctf_2fort",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -17351,7 +17351,7 @@
   },
   {
     "mapName": "ctf_2fort_classic_final",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -19086,7 +19086,7 @@
   },
   {
     "mapName": "ctf_2fort_neocity",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -20821,7 +20821,7 @@
   },
   {
     "mapName": "ctf_doublecross",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -22556,7 +22556,7 @@
   },
   {
     "mapName": "ctf_facing_worlds_1999_final",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -24291,7 +24291,7 @@
   },
   {
     "mapName": "ctf_turbine",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -26026,7 +26026,7 @@
   },
   {
     "mapName": "ctf_well_classic_final",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -27761,7 +27761,7 @@
   },
   {
     "mapName": "pl_badwater",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -29496,7 +29496,7 @@
   },
   {
     "mapName": "pl_badwater_snowy2",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -31231,7 +31231,7 @@
   },
   {
     "mapName": "pl_cooler_badwater_a3",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -32966,7 +32966,7 @@
   },
   {
     "mapName": "pl_cooler_upward_a4",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -34701,7 +34701,7 @@
   },
   {
     "mapName": "pl_goldrush",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -36436,7 +36436,7 @@
   },
   {
     "mapName": "pl_metropolis_b5",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -38171,7 +38171,7 @@
   },
   {
     "mapName": "pl_minecraft_redstone_s15",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -39906,7 +39906,7 @@
   },
   {
     "mapName": "pl_pier",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -41641,7 +41641,7 @@
   },
   {
     "mapName": "pl_ququmannz_rc2",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -43376,7 +43376,7 @@
   },
   {
     "mapName": "pl_simpson_house_b3",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -45111,7 +45111,7 @@
   },
   {
     "mapName": "pl_upward_abandoned",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -46846,7 +46846,7 @@
   },
   {
     "mapName": "rats_toy_fort",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [
@@ -48581,7 +48581,7 @@
   },
   {
     "mapName": "wacky_races_v2c",
-    "gamemodeGrids": [
+    "gameModeGrids": [
       {
         "mercenaryWins": [
           [

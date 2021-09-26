@@ -1,4 +1,4 @@
-package TF2ClassWarsStatTracker;
+package TF2ClassWarsStatTracker.game;
 
 import java.util.Map;
 import java.util.HashMap;

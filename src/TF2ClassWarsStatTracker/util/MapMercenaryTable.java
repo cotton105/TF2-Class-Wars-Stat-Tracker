@@ -1,19 +1,14 @@
 package TF2ClassWarsStatTracker.util;
 
-import TF2ClassWarsStatTracker.GameMap;
-import TF2ClassWarsStatTracker.GamemodeGrid;
+import TF2ClassWarsStatTracker.game.GameMap;
+import TF2ClassWarsStatTracker.game.GameModeGrid;
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class MapMercenaryTable {
-    public static void main(String[] args) {
-    }
-
     public static GameMap getGameMapFromCSV(String filename) {
         GameMap map = new GameMap(FileHandler.removeFileExtension(filename));
         String constructedName = "/maps/" + filename;
@@ -25,7 +20,7 @@ public class MapMercenaryTable {
                 List<String[]> lines = reader.readAll();
                 int intsStartIndex = getIntegerStartIndex(lines);
                 for (int gamemode=0; gamemode<5; gamemode++) {
-                    GamemodeGrid grid = new GamemodeGrid();
+                    GameModeGrid grid = new GameModeGrid();
                     for (int row=0; row<9; row++) {
                         int[] lineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)));
                         int[] nextLineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)+1));
@@ -35,7 +30,7 @@ public class MapMercenaryTable {
                             grid.setMercenaryWins(column, row, bluWins, redWins);
                         }
                     }
-                    map.addGamemodeGrid(grid);
+                    map.addGameModeGrid(grid);
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -81,6 +76,6 @@ public class MapMercenaryTable {
             GameMap map = MapMercenaryTable.getGameMapFromCSV(file.getName());
             maps.add(map);
         }
-        FileHandler.convertToJSONFile(maps, "maps");
+        FileHandler.convertToJSONFile(maps, FileHandler.MAPS_JSON);
     }
 }
