@@ -13,6 +13,7 @@ public class Tracking extends JPanel {
     private static final Color
             BLU_COLOR = new Color(171,203,255),
             RED_COLOR = new Color(255,125,125);
+    private static final String OVERALL_MAP = "OVERALL";
     private static String selectedMap, selectedBluMerc, selectedRedMerc;
     private static int selectedGameMode = -1;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
@@ -37,7 +38,7 @@ public class Tracking extends JPanel {
         ArrayList<String> mapNames = new ArrayList<>();
         for (GameMap map : maps)
             mapNames.add(map.getMapName());
-        selectedMap = mapNames.get(0);  // Set default to the first map
+        selectedMap = OVERALL_MAP;  // Set default to the overall scores
         mapDropdownSelect = new JComboBox(mapNames.toArray());
         mapDropdownSelect.setSelectedIndex(0);
         mapDropdownSelect.addItemListener(new MapDropdownHandler());
@@ -115,11 +116,11 @@ public class Tracking extends JPanel {
     private static void reloadGrid() {
         panMercenaryGrid.removeAll();
         GameModeGrid grid;
-        if (selectedMap.equals("overall") && selectedGameMode == -1)
+        if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1)
             grid = GameModeGrid.getOverallGrid();
         else if (selectedGameMode == -1)
             grid = GameModeGrid.getOverallGrid(selectedMap);
-        else if (selectedMap.equals("overall"))
+        else if (selectedMap.equals(OVERALL_MAP))
             grid = GameModeGrid.getGameModeOverallGrid(selectedGameMode);
         else
             grid = GameMap.gameMapFromJSON(selectedMap).getGameModeGrid(selectedGameMode);
@@ -159,7 +160,7 @@ public class Tracking extends JPanel {
     }
 
     static void viewOverall() {
-        setSelectedMap("overall");
+        setSelectedMap(OVERALL_MAP);
         // TODO: Can't click back to the map that was previously selected before the "Overall" button was clicked
     }
 
