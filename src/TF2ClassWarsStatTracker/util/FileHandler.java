@@ -1,8 +1,8 @@
 package TF2ClassWarsStatTracker.util;
 
 import TF2ClassWarsStatTracker.GameMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -63,6 +63,19 @@ public class FileHandler {
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static JsonArray readJSONArray(String filename) throws NullPointerException {
+        try (InputStream is = FileHandler.class.getResourceAsStream(filename)) {
+            if (is == null)
+                throw new FileNotFoundException(filename);
+            Reader reader = new InputStreamReader(is);
+            JsonElement element = JsonParser.parseReader(reader);
+            return element.getAsJsonArray();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        throw new NullPointerException();
     }
 
     public static List<File> getFilesInDirectory(File directory) {
