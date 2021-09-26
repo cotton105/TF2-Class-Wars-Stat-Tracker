@@ -1,4 +1,4 @@
-package TF2ClassWarsStatTracker.gui;
+package TF2ClassWarsStatTracker.gui.mainmenu;
 
 import TF2ClassWarsStatTracker.StartGUI;
 import TF2ClassWarsStatTracker.util.Print;

@@ -1,4 +1,4 @@
-package TF2ClassWarsStatTracker.gui;
+package TF2ClassWarsStatTracker.gui.tracking;
 
 import TF2ClassWarsStatTracker.util.Constants;
 

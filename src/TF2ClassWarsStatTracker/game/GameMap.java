@@ -1,13 +1,11 @@
 package TF2ClassWarsStatTracker.game;
 
 import TF2ClassWarsStatTracker.util.FileHandler;
-import TF2ClassWarsStatTracker.util.Print;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +30,10 @@ public class GameMap {
         return gameModeGrids;
     }
 
+    public GameModeGrid getGameModeGrid(int gameMode) {
+        return gameModeGrids.get(gameMode);
+    }
+
     public String getMapName() {
         return mapName;
     }
@@ -52,10 +54,8 @@ public class GameMap {
         for (JsonElement mapElement : FileHandler.readJSONArray(FileHandler.MAPS_JSON)) {
             JsonObject jsonMap = mapElement.getAsJsonObject();
             GameMap map = gson.fromJson(jsonMap, GameMap.class);
-            if (map.mapName.equals(mapName)) {
-//                map.addGameModeGrids(getGameModeGrids(jsonMap));
+            if (map.mapName.equals(mapName))
                 return map;
-            }
         }
         throw new NullPointerException();
     }

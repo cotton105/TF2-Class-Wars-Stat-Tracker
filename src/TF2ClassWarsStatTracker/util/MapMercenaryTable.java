@@ -56,7 +56,7 @@ public class MapMercenaryTable {
     }
 
     // Find the line in the .csv that has the integer values
-    private static int getIntegerStartIndex(List<String[]> lines) throws IOException {
+    private static int getIntegerStartIndex(List<String[]> lines) {
         for (int line=0; line<lines.size(); line++) {
             String[] lineStrArray = lines.get(line);
             for (String s : lineStrArray) {

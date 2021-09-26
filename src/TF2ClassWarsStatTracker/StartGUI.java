@@ -1,7 +1,7 @@
 package TF2ClassWarsStatTracker;
 
-import TF2ClassWarsStatTracker.gui.MainMenu;
-import TF2ClassWarsStatTracker.gui.Tracking;
+import TF2ClassWarsStatTracker.gui.mainmenu.MainMenu;
+import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
@@ -20,8 +20,6 @@ public class StartGUI {
         frame = new JFrame("TF2 Class Wars Stat Tracker");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-//        JComponent trackerWindow = new Tracking();
-//        JComponent window = new MainMenu();
         setActiveContentPane(mainMenu);
         frame.setResizable(false);
         frame.setVisible(true);

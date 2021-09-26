@@ -1,2 +1,0 @@
-cp_assault
-cp_balloon_race_v11

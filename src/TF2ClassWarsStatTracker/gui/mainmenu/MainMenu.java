@@ -1,4 +1,4 @@
-package TF2ClassWarsStatTracker.gui;
+package TF2ClassWarsStatTracker.gui.mainmenu;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
