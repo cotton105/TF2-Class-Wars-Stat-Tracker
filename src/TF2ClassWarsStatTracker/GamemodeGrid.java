@@ -3,10 +3,8 @@ package TF2ClassWarsStatTracker;
 public class GamemodeGrid {
     public final static int NORMAL = 0, GLOBAL_ROLLS = 1, MADNESS = 2, MULTIPLY_WEAPONS_STATS = 3, GOOD_ROLLS = 4;
     private Integer[][][] mercenaryWins;  // [BLU Mercenary] [RED Mercenary] [{BLU Wins, RED Wins}]
-    private final int gamemode;
 
-    public GamemodeGrid(int gamemode) {
-        this.gamemode = gamemode;
+    public GamemodeGrid() {
         mercenaryWins = new Integer[9][9][2];
     }
 
@@ -18,4 +16,7 @@ public class GamemodeGrid {
         mercenaryWins[bluMercenary][redMercenary][team]++;
     }
 
+    public Integer[][][] getMercenaryWins() {
+        return mercenaryWins;
+    }
 }

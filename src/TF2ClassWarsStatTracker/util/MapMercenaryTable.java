@@ -15,7 +15,7 @@ public class MapMercenaryTable {
     }
 
     public static GameMap getGameMapFromCSV(String filename) {
-        GameMap map = new GameMap();
+        GameMap map = new GameMap(FileHandler.removeFileExtension(filename));
         String constructedName = "/maps/" + filename;
         try (InputStream is = MapMercenaryTable.class.getResourceAsStream(constructedName)) {
             if (is == null)
@@ -25,7 +25,7 @@ public class MapMercenaryTable {
                 List<String[]> lines = reader.readAll();
                 int intsStartIndex = getIntegerStartIndex(lines);
                 for (int gamemode=0; gamemode<5; gamemode++) {
-                    GamemodeGrid grid = new GamemodeGrid(gamemode);
+                    GamemodeGrid grid = new GamemodeGrid();
                     for (int row=0; row<9; row++) {
                         int[] lineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)));
                         int[] nextLineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)+1));
@@ -61,7 +61,7 @@ public class MapMercenaryTable {
     }
 
     // Find the line in the .csv that has the integer values
-    private static int getIntegerStartIndex(List<String[]> lines) throws IOException, CsvException {
+    private static int getIntegerStartIndex(List<String[]> lines) throws IOException {
         for (int line=0; line<lines.size(); line++) {
             String[] lineStrArray = lines.get(line);
             for (String s : lineStrArray) {
@@ -72,5 +72,15 @@ public class MapMercenaryTable {
             }
         }
         return -1;
+    }
+
+    public static void mapCSVsToJSON() {
+        List<File> fileList = FileHandler.getFilesInDirectory(new File("res/maps"));
+        List<GameMap> maps = new ArrayList<>();
+        for (File file : fileList) {
+            GameMap map = MapMercenaryTable.getGameMapFromCSV(file.getName());
+            maps.add(map);
+        }
+        FileHandler.convertToJSONFile(maps, "maps");
     }
 }

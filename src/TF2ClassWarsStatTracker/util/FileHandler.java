@@ -35,15 +35,13 @@ public class FileHandler {
         return lines;
     }
 
-    public static void readXLFile(String filename) throws IOException {
+    public static void readXLFile(String filename) {
         try {
             File file = new File(filename);
             FileInputStream fis = new FileInputStream(file);
             XSSFWorkbook wb = new XSSFWorkbook(fis);
             XSSFSheet sheet = wb.getSheetAt(0);
-            Iterator<Row> it = sheet.iterator();
-            while (it.hasNext()) {
-                Row row = it.next();
+            for (Row row : sheet) {
                 Iterator<Cell> cellIt = row.cellIterator();
                 while (cellIt.hasNext()) {
                     Cell cell = cellIt.next();
@@ -60,10 +58,9 @@ public class FileHandler {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
         Gson gson = builder.create();
-        String constructedFilename = "/maps/json/" + filename + ".json";
-        try (PrintWriter pw = new PrintWriter(new File(FileHandler.class.getResource(constructedFilename).getPath()))) {
+        try (PrintWriter pw = new PrintWriter(filename + ".json")) {
             gson.toJson(obj, pw);
-        } catch (IOException ex) {
+        } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
     }
@@ -77,5 +74,9 @@ public class FileHandler {
                 fileList.add(file);
         }
         return fileList;
+    }
+
+    public static String removeFileExtension(String filename) {
+        return filename.substring(0, filename.lastIndexOf('.'));
     }
 }
