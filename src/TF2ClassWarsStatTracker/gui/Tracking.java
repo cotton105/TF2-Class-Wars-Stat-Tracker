@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Tracking extends JPanel implements ActionListener {
+public class Tracking extends JPanel {
     private static final Color
             BLU_COLOR = new Color(171,203,255),
             RED_COLOR = new Color(255,125,125);
@@ -35,6 +35,7 @@ public class Tracking extends JPanel implements ActionListener {
         ArrayList<String> mapNames = new ArrayList<>();
         for (GameMap map : maps)
             mapNames.add(map.getMapName());
+        selectedMap = mapNames.get(0);
         JComboBox mapDropdownSelect = new JComboBox(mapNames.toArray());
         mapDropdownSelect.setSelectedIndex(0);
         mapDropdownSelect.addItemListener(new MapDropdownHandler());
@@ -61,7 +62,14 @@ public class Tracking extends JPanel implements ActionListener {
         JLabel labBlu = new JLabel("BLU");
         JLabel labRed = new JLabel("RED");
 
-        createMercGrid(panRight);
+        JPanel panGameModeSelect = new JPanel(new GridLayout(1, 5));
+        for (int i=0; i<5; i++) {
+
+        }
+
+        panMercenaryGrid = new JPanel(new GridLayout(10, 10));
+        panRight.add(panMercenaryGrid);
+        reloadGrid();
 
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -86,32 +94,6 @@ public class Tracking extends JPanel implements ActionListener {
         add(panRight, BorderLayout.EAST);
     }
 
-    private void createMercGrid(JComponent parent) {
-        panMercenaryGrid = new JPanel(new GridLayout(10,10));
-        for (int i=0; i<10; i++) {
-            for (int j=0; j<10; j++) {
-                JComponent gridElement;
-                if (i == 0 && j > 0) {  // BLU mercenaries (first row)
-                    gridElement = new JLabel(Constants.MERCENARY[j-1]);
-                    gridElement.setBackground(BLU_COLOR);
-                } else if (i == 0) {
-                    gridElement = new JLabel("RED \\ BLU");
-                } else if (j == 0) {  // RED mercenaries (first column)
-                    gridElement = new JLabel(Constants.MERCENARY[i-1]);
-                    gridElement.setBackground(RED_COLOR);
-                } else {  // Add button to select relevant match-up on the left panel
-                    gridElement = new JButton("X");
-                    gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(j-1, i-1));
-                }
-                gridElement.setOpaque(true);
-                gridElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                gridElement.setPreferredSize(new Dimension(65, 65));
-                panMercenaryGrid.add(gridElement);
-            }
-        }
-        parent.add(panMercenaryGrid, BorderLayout.CENTER);
-    }
-
     static void setSelectedMercenary(int team, int mercenary) {
         if (team == Constants.BLU)
             labSelectedBluMerc.setText(Constants.MERCENARY[mercenary]);
@@ -125,8 +107,6 @@ public class Tracking extends JPanel implements ActionListener {
     }
 
     static void reloadGrid() {
-//        Print.timestamp("Feature not implemented.");
-//        panMercenaryGrid = new JPanel(new GridLayout(10,10));
         panMercenaryGrid.removeAll();
         GameMap map = GameMap.gameMapFromJSON(selectedMap);
         for (int row=0; row<10; row++) {
@@ -141,9 +121,12 @@ public class Tracking extends JPanel implements ActionListener {
                     gridElement = new JLabel(Constants.MERCENARY[row-1]);
                     gridElement.setBackground(RED_COLOR);
                 } else {  // Add button to select relevant match-up on the left panel
-                    int[] matchupScores = map.getGameModeGrids().get(selectedGameMode).getMercenaryWins()[row][column];
+                    int[] matchupScores = map.getGameModeGrids().get(selectedGameMode).getMercenaryWins()[column-1][row-1];
                     float ratioBias = Calculation.getRatioBias(matchupScores[0], matchupScores[1]);
-                    gridElement = new JButton(String.format("%.2f", ratioBias));
+                    String buttonStr;
+                    if (!Float.isNaN(ratioBias)) buttonStr = String.format("%.2f", ratioBias);
+                    else buttonStr = "";
+                    gridElement = new JButton(buttonStr);
                     gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
                 }
                 gridElement.setOpaque(true);
@@ -152,11 +135,6 @@ public class Tracking extends JPanel implements ActionListener {
                 panMercenaryGrid.add(gridElement);
             }
         }
-//        parent.add(panMercenaryGrid, BorderLayout.CENTER);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
+        panMercenaryGrid.revalidate();
     }
 }

@@ -14,11 +14,7 @@ public class MapDropdownHandler implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        int state = e.getStateChange();
-        System.out.println((state == ItemEvent.SELECTED) ? "Selected" : "Deselected");
-        System.out.println("Item: " + e.getItem());
         ItemSelectable is = e.getItemSelectable();
-        System.out.println("Selected: " + selectedString(is));
         Tracking.setSelectedMap(selectedString(is));
     }
 }

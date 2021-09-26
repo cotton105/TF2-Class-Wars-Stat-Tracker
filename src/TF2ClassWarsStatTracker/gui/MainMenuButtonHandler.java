@@ -1,6 +1,6 @@
 package TF2ClassWarsStatTracker.gui;
 
-import TF2ClassWarsStatTracker.Start;
+import TF2ClassWarsStatTracker.StartGUI;
 import TF2ClassWarsStatTracker.util.Print;
 
 import java.awt.event.ActionEvent;
@@ -17,10 +17,10 @@ public class MainMenuButtonHandler implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (action) {
             case EXIT:
-                Start.exit();
+                StartGUI.exit();
                 break;
             case TRACKER:
-                Start.setActiveContentPane(Start.getTrackerScreen());
+                StartGUI.setActiveContentPane(StartGUI.getTrackerScreen());
                 break;
             case VIEW_STATS:
                 Print.timestamp("Feature not implemented");
