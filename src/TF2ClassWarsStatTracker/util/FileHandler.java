@@ -1,6 +1,8 @@
 package TF2ClassWarsStatTracker.util;
 
 import com.google.gson.*;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -26,28 +28,8 @@ public class FileHandler {
         }
         return lines;
     }
-/*
-    public static void readXLFile(String filename) {
-        try {
-            File file = new File(filename);
-            FileInputStream fis = new FileInputStream(file);
-            XSSFWorkbook wb = new XSSFWorkbook(fis);
-            XSSFSheet sheet = wb.getSheetAt(0);
-            for (Row row : sheet) {
-                Iterator<Cell> cellIt = row.cellIterator();
-                while (cellIt.hasNext()) {
-                    Cell cell = cellIt.next();
-                    System.out.println(cell.getStringCellValue() + "\t\t\t");
-                }
-            }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-*/
 
-    public static void convertToJSONFile(Object obj, String filename) {
+    public static void writeToJSONFile(Object obj, String filename) {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
         Gson gson = builder.create();
@@ -67,6 +49,21 @@ public class FileHandler {
             return element.getAsJsonArray();
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+        throw new NullPointerException();
+    }
+
+    public static List<String[]> readCSVLines(String filename) throws IOException {
+        try (InputStream is = FileHandler.class.getResourceAsStream(filename)) {
+            if (is == null)
+                throw new FileNotFoundException(filename);
+            try {
+                CSVReader reader = new CSVReader(new InputStreamReader(is));
+                return reader.readAll();
+            } catch (IOException | CsvException ex) {
+                Print.error(ex.getMessage());
+                ex.printStackTrace();
+            }
         }
         throw new NullPointerException();
     }

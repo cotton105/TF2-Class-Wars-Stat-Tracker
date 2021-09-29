@@ -16,17 +16,11 @@ public class MainMenuButtonHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (action) {
-            case EXIT:
-                StartGUI.exit();
-                break;
-            case TRACKER:
-                StartGUI.setActiveContentPane(StartGUI.getTrackerScreen());
-                break;
-            case VIEW_STATS:
-                Print.timestamp("Feature not implemented");
-                break;
-            default:
-                break;
+            case EXIT -> StartGUI.exit();
+            case TRACKER -> StartGUI.setActiveContentPane(StartGUI.getTrackerScreen());
+            case VIEW_STATS -> Print.print("Feature not implemented");
+            default -> {
+            }
         }
     }
 }

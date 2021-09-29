@@ -1,5 +1,7 @@
 package TF2ClassWarsStatTracker.game;
 
+import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
+
 import java.util.List;
 
 public class GameModeGrid {
@@ -31,9 +33,8 @@ public class GameModeGrid {
     }
 
     public static GameModeGrid getOverallGrid() {
-        List<GameMap> gameMaps = GameMap.gameMapsFromJSON();
         int[][][] mercenaryWins = new int[9][9][2];
-        for (GameMap map : gameMaps) {
+        for (GameMap map : GameMap.getMaps()) {
             List<GameModeGrid> grids = map.getGameModeGrids();
             for (GameModeGrid grid : grids)
                 addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
@@ -41,9 +42,9 @@ public class GameModeGrid {
         return new GameModeGrid(mercenaryWins);
     }
 
-    public static GameModeGrid getOverallGrid(String mapName) {
+    public static GameModeGrid getOverallGrid(String mapName) throws GameMapNotFoundException {
         int[][][] mercenaryWins = new int[9][9][2];
-        GameMap map = GameMap.gameMapFromJSON(mapName);
+        GameMap map = GameMap.getMap(mapName);
         for (GameModeGrid grid : map.getGameModeGrids())
             addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
         return new GameModeGrid(mercenaryWins);
@@ -51,11 +52,15 @@ public class GameModeGrid {
 
     public static GameModeGrid getGameModeOverallGrid(int gameMode) {
         int[][][] mercenaryWins = new int[9][9][2];
-        for (GameMap map : GameMap.gameMapsFromJSON()) {
+        for (GameMap map : GameMap.getMaps()) {
             GameModeGrid grid = map.getGameModeGrid(gameMode);
             addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
         }
         return new GameModeGrid(mercenaryWins);
+    }
+
+    public static GameModeGrid getEmptyGrid() {
+        return new GameModeGrid();
     }
 
     private static void addMercenaryWinsFromGrid(int[][][] subjectGrid, int[][][] existingGrid) {

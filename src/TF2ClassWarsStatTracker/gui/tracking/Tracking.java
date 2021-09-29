@@ -1,9 +1,12 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
+import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.util.Calculate;
 import TF2ClassWarsStatTracker.util.Constants;
+import TF2ClassWarsStatTracker.util.JSONHandler;
+import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +17,10 @@ public class Tracking extends JPanel {
             BLU_COLOUR = new Color(171,203,255),
             RED_COLOUR = new Color(255,125,125);
     private static final String OVERALL_MAP = "OVERALL";
-    private static String selectedMap, selectedBluMerc, selectedRedMerc;
-    private static int selectedGameMode = -1;
+    private static String selectedMap;
+    private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
     private static JPanel panMercenaryGrid;
-    private static JComboBox mapDropdownSelect;
 
     public Tracking() {
         super(new BorderLayout());
@@ -34,19 +36,31 @@ public class Tracking extends JPanel {
 
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
 
-        ArrayList<GameMap> maps = new ArrayList<>(GameMap.gameMapsFromJSON());
+        ArrayList<GameMap> maps = new ArrayList<>(JSONHandler.gameMapsFromJSON());
         ArrayList<String> mapNames = new ArrayList<>();
         for (GameMap map : maps)
             mapNames.add(map.getMapName());
         selectedMap = OVERALL_MAP;  // Set default to the overall scores
-        mapDropdownSelect = new JComboBox(mapNames.toArray());
+        JComboBox<String> mapDropdownSelect = new JComboBox<>();
+        for (Object mapName : mapNames.toArray())
+            mapDropdownSelect.addItem(mapName.toString());
         mapDropdownSelect.setSelectedIndex(0);
         mapDropdownSelect.addItemListener(new MapDropdownHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
+
         JPanel panBlu = new JPanel(new BorderLayout());
+        JPanel panBluHeader = new JPanel(new FlowLayout());
+        JLabel labBlu = new JLabel("BLU");
+        JButton butBluWin = new JButton("WIN");
+        butBluWin.addActionListener(new RecordWinButtonHandler(Constants.BLU));
+
         JPanel panRed = new JPanel(new BorderLayout());
+        JPanel panRedHeader = new JPanel(new FlowLayout());
+        JLabel labRed = new JLabel("RED");
+        JButton butRedWin = new JButton("WIN");
+        butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
 
         JPanel panBluClassSelect = new JPanel(new GridLayout(3,3));
         for (int i=0; i<9; i++) {
@@ -62,8 +76,6 @@ public class Tracking extends JPanel {
             panRedClassSelect.add(butClassSelect);
         }
         labSelectedRedMerc = new JLabel("No selected mercenary");
-        JLabel labBlu = new JLabel("BLU");
-        JLabel labRed = new JLabel("RED");
 
         JPanel panGameModeSelect = new JPanel(new GridLayout(1, 5));
         ButtonGroup gameModeSelectGroup = new ButtonGroup();
@@ -99,11 +111,15 @@ public class Tracking extends JPanel {
         panSelectedMapInfo.add(mapDropdownSelect);
         panLeft.add(panBluVsRed, BorderLayout.PAGE_END);
         panBluVsRed.add(panBlu, BorderLayout.WEST);
-        panBlu.add(labBlu, BorderLayout.NORTH);
+        panBlu.add(panBluHeader, BorderLayout.NORTH);
+        panBluHeader.add(labBlu);
+        panBluHeader.add(butBluWin);
         panBlu.add(panBluClassSelect, BorderLayout.CENTER);
         panBlu.add(labSelectedBluMerc, BorderLayout.SOUTH);
         panBluVsRed.add(panRed, BorderLayout.EAST);
-        panRed.add(labRed, BorderLayout.NORTH);
+        panRed.add(panRedHeader, BorderLayout.NORTH);
+        panRedHeader.add(labRed);
+        panRedHeader.add(butRedWin);
         panRed.add(panRedClassSelect, BorderLayout.CENTER);
         panRed.add(labSelectedRedMerc, BorderLayout.SOUTH);
         panRight.add(panGameModeSelect, BorderLayout.NORTH);
@@ -113,17 +129,23 @@ public class Tracking extends JPanel {
         reloadGrid();
     }
 
-    private static void reloadGrid() {
+    static void reloadGrid() {
         panMercenaryGrid.removeAll();
         GameModeGrid grid;
-        if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1)
-            grid = GameModeGrid.getOverallGrid();
-        else if (selectedGameMode == -1)
-            grid = GameModeGrid.getOverallGrid(selectedMap);
-        else if (selectedMap.equals(OVERALL_MAP))
-            grid = GameModeGrid.getGameModeOverallGrid(selectedGameMode);
-        else
-            grid = GameMap.gameMapFromJSON(selectedMap).getGameModeGrid(selectedGameMode);
+        try {
+            if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1)
+                grid = GameModeGrid.getOverallGrid();
+            else if (selectedGameMode == -1)
+                    grid = GameModeGrid.getOverallGrid(selectedMap);
+            else if (selectedMap.equals(OVERALL_MAP))
+                grid = GameModeGrid.getGameModeOverallGrid(selectedGameMode);
+            else
+                grid = GameMap.getMap(selectedMap).getGameModeGrid(selectedGameMode);
+        } catch (GameMapNotFoundException ex) {
+            Print.error(ex.getMessage());
+            ex.printStackTrace();
+            grid = GameModeGrid.getEmptyGrid();
+        }
         fillGrid(grid);
         panMercenaryGrid.revalidate();
     }
@@ -144,19 +166,15 @@ public class Tracking extends JPanel {
                     int[] matchupScores = grid.getMercenaryWins()[column-1][row-1];
                     float ratioBias = Calculate.getRatioBias(matchupScores[0], matchupScores[1]);
                     String buttonStr;
-                    Color buttonColour;
+                    Color buttonColour = Color.WHITE;
                     if (!Float.isNaN(ratioBias)) {
                         buttonStr = String.format("%.2f", ratioBias);
                         if (ratioBias > 0)
                             buttonColour = RED_COLOUR;
                         else if (ratioBias < 0)
                             buttonColour = BLU_COLOUR;
-                        else
-                            buttonColour = Color.WHITE;
-                    } else {
+                    } else
                         buttonStr = "";
-                        buttonColour = Color.WHITE;
-                    }
                     gridElement = new JButton(buttonStr);
                     gridElement.setBackground(buttonColour);
                     gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
@@ -175,10 +193,14 @@ public class Tracking extends JPanel {
     }
 
     static void setSelectedMercenary(int team, int mercenary) {
-        if (team == Constants.BLU)
+        if (team == Constants.BLU) {
+            selectedBluMercenary = mercenary;
             labSelectedBluMerc.setText(Constants.MERCENARY[mercenary]);
-        else if (team == Constants.RED)
+        }
+        else if (team == Constants.RED) {
+            selectedRedMercenary = mercenary;
             labSelectedRedMerc.setText(Constants.MERCENARY[mercenary]);
+        }
     }
 
     static void setSelectedMap(String mapName) {
@@ -186,8 +208,24 @@ public class Tracking extends JPanel {
         reloadGrid();
     }
 
-    public static void setSelectedGameMode(int gameMode) {
+    static String getSelectedMap() {
+        return selectedMap;
+    }
+
+    static void setSelectedGameMode(int gameMode) {
         selectedGameMode = gameMode;
         reloadGrid();
+    }
+
+    static int getSelectedGameMode() {
+        return selectedGameMode;
+    }
+
+    static int getSelectedBluMercenary() {
+        return selectedBluMercenary;
+    }
+
+    static int getSelectedRedMercenary() {
+        return selectedRedMercenary;
     }
 }

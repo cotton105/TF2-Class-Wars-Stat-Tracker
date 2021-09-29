@@ -41,7 +41,7 @@ public class StartGUI {
     }
 
     public static void exit() {
-        Print.timestamp("Exiting tracker program...");
+        Print.print("Exiting tracker program...");
         frame.dispose();
     }
 }

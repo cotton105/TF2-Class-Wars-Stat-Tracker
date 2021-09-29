@@ -6,13 +6,29 @@ import java.util.ArrayList;
 
 public class Print {
     private final static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+    public static void print(String msg) {
+        Print.timestamp(msg);
+    }
+
+    public static void print(String msg, boolean timestamp) {
+        if (timestamp) {
+            timestamp(msg);
+        } else {
+            System.out.println(msg);
+        }
+    }
     /**
      * Print a string with a timestamp prepended.
      * @param str message to output.
      */
-    public static void timestamp(String str) {
+    private static void timestamp(String str) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         System.out.printf("[%s] %s\n", timeFormat.format(timestamp), str);
+    }
+
+    public static void error(String str) {
+        timestamp(String.format("ERR: %s", str));
     }
 
     public static void commaSeparated(ArrayList<String> strs, boolean timestamp) {
