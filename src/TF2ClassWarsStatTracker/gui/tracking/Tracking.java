@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class Tracking extends JPanel {
     private static final Color
-            BLU_COLOR = new Color(171,203,255),
-            RED_COLOR = new Color(255,125,125);
+            BLU_COLOUR = new Color(171,203,255),
+            RED_COLOUR = new Color(255,125,125);
     private static final String OVERALL_MAP = "OVERALL";
     private static String selectedMap, selectedBluMerc, selectedRedMerc;
     private static int selectedGameMode = -1;
@@ -134,21 +134,31 @@ public class Tracking extends JPanel {
                 JComponent gridElement;
                 if (row == 0 && column > 0) {  // BLU mercenaries (first row)
                     gridElement = new JLabel(Constants.MERCENARY[column-1]);
-                    gridElement.setBackground(BLU_COLOR);
+                    gridElement.setBackground(BLU_COLOUR);
                 } else if (row == 0) {
                     gridElement = new JLabel("RED \\ BLU");
                 } else if (column == 0) {  // RED mercenaries (first column)
                     gridElement = new JLabel(Constants.MERCENARY[row-1]);
-                    gridElement.setBackground(RED_COLOR);
+                    gridElement.setBackground(RED_COLOUR);
                 } else {  // Add button to select relevant match-up on the left panel
                     int[] matchupScores = grid.getMercenaryWins()[column-1][row-1];
                     float ratioBias = Calculate.getRatioBias(matchupScores[0], matchupScores[1]);
                     String buttonStr;
-                    if (!Float.isNaN(ratioBias))
+                    Color buttonColour;
+                    if (!Float.isNaN(ratioBias)) {
                         buttonStr = String.format("%.2f", ratioBias);
-                    else
+                        if (ratioBias > 0)
+                            buttonColour = RED_COLOUR;
+                        else if (ratioBias < 0)
+                            buttonColour = BLU_COLOUR;
+                        else
+                            buttonColour = Color.WHITE;
+                    } else {
                         buttonStr = "";
+                        buttonColour = Color.WHITE;
+                    }
                     gridElement = new JButton(buttonStr);
+                    gridElement.setBackground(buttonColour);
                     gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
                 }
                 gridElement.setOpaque(true);
