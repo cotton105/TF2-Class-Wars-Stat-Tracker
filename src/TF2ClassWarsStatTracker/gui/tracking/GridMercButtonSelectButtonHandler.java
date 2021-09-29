@@ -2,10 +2,10 @@ package TF2ClassWarsStatTracker.gui.tracking;
 
 import TF2ClassWarsStatTracker.util.Constants;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class GridMercButtonSelectButtonHandler implements MouseListener {
+public class GridMercButtonSelectButtonHandler implements ActionListener {
     private final int blu, red;
 
     GridMercButtonSelectButtonHandler(int blu, int red) {
@@ -14,27 +14,8 @@ public class GridMercButtonSelectButtonHandler implements MouseListener {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
+    public void actionPerformed(ActionEvent e) {
         Tracking.setSelectedMercenary(Constants.BLU, blu);
         Tracking.setSelectedMercenary(Constants.RED, red);
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
     }
 }

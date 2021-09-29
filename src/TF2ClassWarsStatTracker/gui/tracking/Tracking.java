@@ -12,10 +12,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
+import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
+
 public class Tracking extends JPanel {
-    private static final Color
-            BLU_COLOUR = new Color(171,203,255),
-            RED_COLOUR = new Color(255,125,125);
     private static final String OVERALL_MAP = "OVERALL";
     private static String selectedMap;
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
@@ -169,15 +169,18 @@ public class Tracking extends JPanel {
                     Color buttonColour = Color.WHITE;
                     if (!Float.isNaN(ratioBias)) {
                         buttonStr = String.format("%.2f", ratioBias);
-                        if (ratioBias > 0)
-                            buttonColour = RED_COLOUR;
-                        else if (ratioBias < 0)
-                            buttonColour = BLU_COLOUR;
+                        buttonColour = Calculate.getColourScaledFromWhite(ratioBias, BLU_COLOUR, RED_COLOUR);
+//                        if (ratioBias > 0)
+//                            buttonColour = RED_COLOUR;
+//                        else if (ratioBias < 0)
+//                            buttonColour = BLU_COLOUR;
                     } else
                         buttonStr = "";
                     gridElement = new JButton(buttonStr);
                     gridElement.setBackground(buttonColour);
-                    gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
+//                    gridElement.addlistener
+                    ((JButton)gridElement).addActionListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
+//                    gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
                 }
                 gridElement.setOpaque(true);
                 gridElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
