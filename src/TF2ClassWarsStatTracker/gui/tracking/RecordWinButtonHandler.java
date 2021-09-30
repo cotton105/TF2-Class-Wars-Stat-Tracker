@@ -1,10 +1,12 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
+import TF2ClassWarsStatTracker.StartGUI;
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.util.FileHandler;
 import TF2ClassWarsStatTracker.util.Print;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,6 +25,7 @@ public class RecordWinButtonHandler implements ActionListener {
                     team);
             FileHandler.writeToJSONFile(GameMap.getMaps(), "res/maps.json");
         } catch (GameMapNotFoundException | IndexOutOfBoundsException ex) {
+            JOptionPane.showMessageDialog(StartGUI.getTrackerScreen(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Print.error(ex.getMessage());
         }
         Tracking.reloadGrid();
