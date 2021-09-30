@@ -11,6 +11,7 @@ import TF2ClassWarsStatTracker.util.Print;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
 import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
@@ -36,7 +37,7 @@ public class Tracking extends JPanel {
 
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
 
-        ArrayList<GameMap> maps = new ArrayList<>(JSONHandler.gameMapsFromJSON());
+        List<GameMap> maps = GameMap.getMaps();
         ArrayList<String> mapNames = new ArrayList<>();
         for (GameMap map : maps)
             mapNames.add(map.getMapName());

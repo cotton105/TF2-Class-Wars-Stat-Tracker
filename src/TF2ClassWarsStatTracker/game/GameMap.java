@@ -1,15 +1,30 @@
 package TF2ClassWarsStatTracker.game;
 
+import TF2ClassWarsStatTracker.Start;
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
 import TF2ClassWarsStatTracker.util.JSONHandler;
 
+import javax.swing.*;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap {
     private final String mapName;
     private final List<GameModeGrid> gameModeGrids;
-    public static final List<GameMap> maps = JSONHandler.gameMapsFromJSON();
+
+    public static final List<GameMap> maps = new ArrayList<>();
+
+    static {
+        try {
+            List<GameMap> maps = JSONHandler.gameMapsFromJSON();
+            GameMap.maps.addAll(maps);
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(Start.getMainMenu(), ex.getMessage(), "App load failure", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
 
     public GameMap(String mapName) {
         this.mapName = mapName;

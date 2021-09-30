@@ -40,17 +40,13 @@ public class FileHandler {
         }
     }
 
-    public static JsonArray readJSONArray(String filename) throws NullPointerException {
-        try (InputStream is = FileHandler.class.getResourceAsStream(filename)) {
-            if (is == null)
-                throw new FileNotFoundException(filename);
-            Reader reader = new InputStreamReader(is);
-            JsonElement element = JsonParser.parseReader(reader);
-            return element.getAsJsonArray();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        throw new NullPointerException();
+    public static JsonArray readJSONArray(String filename) throws FileNotFoundException {
+        InputStream is = FileHandler.class.getResourceAsStream(filename);
+        if (is == null)
+            throw new FileNotFoundException(String.format("File \"%s\" not found.", filename));
+        Reader reader = new InputStreamReader(is);
+        JsonElement element = JsonParser.parseReader(reader);
+        return element.getAsJsonArray();
     }
 
     public static List<String[]> readCSVLines(String filename) throws IOException {

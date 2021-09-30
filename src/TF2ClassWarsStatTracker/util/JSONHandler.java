@@ -119,7 +119,7 @@ public class JSONHandler {
         FileHandler.writeToJSONFile(maps, FileHandler.MAPS_JSON);
     }
 
-    public static List<GameMap> gameMapsFromJSON() {
+    public static List<GameMap> gameMapsFromJSON() throws FileNotFoundException {
         Gson gson = new Gson();
         List<GameMap> maps = new ArrayList<>();
         JsonArray jsonArray = FileHandler.readJSONArray(FileHandler.MAPS_JSON);
@@ -130,7 +130,7 @@ public class JSONHandler {
         return maps;
     }
 
-    public static GameMap gameMapFromJSON(String mapName) {
+    public static GameMap gameMapFromJSON(String mapName) throws FileNotFoundException {
         Gson gson = new Gson();
         for (JsonElement mapElement : FileHandler.readJSONArray(FileHandler.MAPS_JSON)) {
             JsonObject jsonMap = mapElement.getAsJsonObject();
@@ -138,6 +138,6 @@ public class JSONHandler {
             if (map.getMapName().equals(mapName))
                 return map;
         }
-        throw new NullPointerException();
+        throw new FileNotFoundException();
     }
 }
