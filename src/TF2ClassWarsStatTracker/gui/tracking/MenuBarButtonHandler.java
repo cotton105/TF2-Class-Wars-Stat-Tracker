@@ -1,6 +1,6 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
-import TF2ClassWarsStatTracker.StartGUI;
+import TF2ClassWarsStatTracker.Start;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,15 +16,9 @@ public class MenuBarButtonHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (action) {
-            case EXIT:
-                StartGUI.exit();
-                break;
-            case MENU:
-                StartGUI.setActiveContentPane(StartGUI.getMainMenu());
-                break;
-            case OVERALL:
-                Tracking.viewOverall();
-                break;
+            case EXIT -> Start.exit();
+            case MENU -> Start.setActiveContentPane(Start.getMainMenu());
+            case OVERALL -> Tracking.viewOverall();
         }
     }
 }

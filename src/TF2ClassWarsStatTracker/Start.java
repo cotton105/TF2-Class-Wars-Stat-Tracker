@@ -6,14 +6,14 @@ import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 
-public class StartGUI {
+public class Start {
     private static final int WIDTH = 400, HEIGHT = 400;
     private static JFrame frame;
     private static final JComponent mainMenu = new MainMenu();
     private static final JComponent trackerScreen = new Tracking();
 
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(StartGUI::initGUI);
+        javax.swing.SwingUtilities.invokeLater(Start::initGUI);
     }
 
     private static void initGUI() {
