@@ -16,7 +16,7 @@ import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
 import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
 
 public class Tracking extends JPanel {
-    private static final String OVERALL_MAP = "Overall scores";
+    public static final String OVERALL_MAP = "Overall scores";
     private static String selectedMap;
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
@@ -24,6 +24,7 @@ public class Tracking extends JPanel {
     private static JButton butRedWin;
     private static JButton butBluWin;
     private static JComboBox<String> mapDropdownSelect;
+    private static JLabel labBluGamesWon, labRedGamesWon;
 
     public Tracking() {
         super(new BorderLayout());
@@ -56,27 +57,30 @@ public class Tracking extends JPanel {
         JLabel labBlu = new JLabel("BLU");
         butBluWin = new JButton("WIN");
         butBluWin.addActionListener(new RecordWinButtonHandler(Constants.BLU));
-
-        JPanel panRed = new JPanel(new BorderLayout());
-        JPanel panRedHeader = new JPanel(new FlowLayout());
-        JLabel labRed = new JLabel("RED");
-        butRedWin = new JButton("WIN");
-        butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
-
         JPanel panBluClassSelect = new JPanel(new GridLayout(3,3));
         for (int i=0; i<9; i++) {
             JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
             butClassSelect.addActionListener(new ClassSelectButtonHandler(Constants.BLU, i));
             panBluClassSelect.add(butClassSelect);
         }
-        labSelectedBluMerc = new JLabel("No selected mercenary");
+        JPanel panSelectedBluInfo = new JPanel(new GridLayout(2, 1));
+        labSelectedBluMerc = new JLabel("Selected:");
+        labBluGamesWon = new JLabel();
+
+        JPanel panRed = new JPanel(new BorderLayout());
+        JPanel panRedHeader = new JPanel(new FlowLayout());
+        JLabel labRed = new JLabel("RED");
+        butRedWin = new JButton("WIN");
+        butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
         JPanel panRedClassSelect = new JPanel(new GridLayout(3,3));
         for (int i=0; i<9; i++) {
             JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
             butClassSelect.addActionListener(new ClassSelectButtonHandler(Constants.RED, i));
             panRedClassSelect.add(butClassSelect);
         }
-        labSelectedRedMerc = new JLabel("No selected mercenary");
+        JPanel panSelectedRedInfo = new JPanel(new GridLayout(2, 1));
+        labSelectedRedMerc = new JLabel("Selected: ");
+        labRedGamesWon = new JLabel();
 
         JPanel panSelectedGameInfo = new JPanel(new GridLayout(2, 1));
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
@@ -99,12 +103,14 @@ public class Tracking extends JPanel {
         }
         panMercenaryGrid = new JPanel(new GridLayout(10, 10));
 
+        // Set Borders everywhere
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panRight.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         panRed.setBorder(BorderFactory.createLineBorder(Color.RED));
 
+        // JComponent parent-child structure
         add(panMenuBar, BorderLayout.NORTH);
         panMenuBar.add(butBack, BorderLayout.WEST);
         add(panLeft, BorderLayout.WEST);
@@ -114,13 +120,17 @@ public class Tracking extends JPanel {
         panBluHeader.add(labBlu);
         panBluHeader.add(butBluWin);
         panBlu.add(panBluClassSelect, BorderLayout.CENTER);
-        panBlu.add(labSelectedBluMerc, BorderLayout.SOUTH);
+        panBlu.add(panSelectedBluInfo, BorderLayout.SOUTH);
+        panSelectedBluInfo.add(labSelectedBluMerc);
+        panSelectedBluInfo.add(labBluGamesWon);
         panBluVsRed.add(panRed, BorderLayout.EAST);
         panRed.add(panRedHeader, BorderLayout.NORTH);
         panRedHeader.add(labRed);
         panRedHeader.add(butRedWin);
         panRed.add(panRedClassSelect, BorderLayout.CENTER);
-        panRed.add(labSelectedRedMerc, BorderLayout.SOUTH);
+        panRed.add(panSelectedRedInfo, BorderLayout.SOUTH);
+        panSelectedRedInfo.add(labSelectedRedMerc);
+        panSelectedRedInfo.add(labRedGamesWon);
 
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
         panSelectedGameInfo.add(panSelectedMapInfo);
@@ -181,7 +191,7 @@ public class Tracking extends JPanel {
                     gridElement = new JLabel(Constants.MERCENARY[row-1]);
                     gridElement.setBackground(RED_COLOUR);
                 } else {  // Add button to select relevant match-up on the left panel
-                    int[] matchupScores = grid.getMercenaryWins()[column-1][row-1];
+                    int[] matchupScores = grid.getMatchupWins()[column-1][row-1];
                     float ratioBias = Calculate.getRatioBias(matchupScores[0], matchupScores[1]);
                     String buttonStr;
                     Color buttonColour = Color.WHITE;
@@ -207,12 +217,17 @@ public class Tracking extends JPanel {
     static void setSelectedMercenary(int team, int mercenary) {
         if (team == Constants.BLU) {
             selectedBluMercenary = mercenary;
-            labSelectedBluMerc.setText(Constants.MERCENARY[mercenary]);
+            labSelectedBluMerc.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
         }
         else if (team == Constants.RED) {
             selectedRedMercenary = mercenary;
-            labSelectedRedMerc.setText(Constants.MERCENARY[mercenary]);
+            labSelectedRedMerc.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
         }
+    }
+
+    static void viewOverall() {
+        setSelectedMap(OVERALL_MAP);
+        mapDropdownSelect.setSelectedItem(OVERALL_MAP);
     }
 
     static void setSelectedMap(String mapName) {
@@ -222,11 +237,6 @@ public class Tracking extends JPanel {
 
     static String getSelectedMap() {
         return selectedMap;
-    }
-
-    static void viewOverall() {
-        setSelectedMap(OVERALL_MAP);
-        mapDropdownSelect.setSelectedItem(OVERALL_MAP);
     }
 
     static void setSelectedGameMode(int gameMode) {
@@ -244,5 +254,19 @@ public class Tracking extends JPanel {
 
     static int getSelectedRedMercenary() {
         return selectedRedMercenary;
+    }
+
+    static void updateMatchupWinLabels() {
+        if (0 <= selectedBluMercenary && selectedBluMercenary < 9 && 0 <= selectedRedMercenary && selectedRedMercenary < 9) {
+            try {
+                int[] totalWins = GameMap.getTotalWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
+                String bluGamesWonText = String.format("Won: %d", totalWins[0]);
+                String redGamesWonText = String.format("Won: %d", totalWins[1]);
+                labBluGamesWon.setText(bluGamesWonText);
+                labRedGamesWon.setText(redGamesWonText);
+            } catch (GameMapNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

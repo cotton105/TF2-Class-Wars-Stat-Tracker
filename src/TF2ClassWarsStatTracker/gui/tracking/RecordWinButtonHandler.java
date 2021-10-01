@@ -21,13 +21,14 @@ public class RecordWinButtonHandler implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             GameMap.incrementWins(Tracking.getSelectedMap(), Tracking.getSelectedGameMode(),
-                    Tracking.getSelectedRedMercenary(), Tracking.getSelectedBluMercenary(),
+                    Tracking.getSelectedBluMercenary(), Tracking.getSelectedRedMercenary(),
                     team);
             FileHandler.writeToJSONFile(GameMap.getMaps(), "res/maps.json");
         } catch (GameMapNotFoundException | IndexOutOfBoundsException ex) {
             JOptionPane.showMessageDialog(Start.getTrackerScreen(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Print.error(ex.getMessage());
         }
+        Tracking.updateMatchupWinLabels();
         Tracking.reloadGrid();
     }
 }

@@ -2,6 +2,7 @@ package TF2ClassWarsStatTracker.game;
 
 import TF2ClassWarsStatTracker.Start;
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
+import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.JSONHandler;
 
 import javax.swing.*;
@@ -29,6 +30,10 @@ public class GameMap {
     public GameMap(String mapName) {
         this.mapName = mapName;
         gameModeGrids = new ArrayList<>();
+    }
+
+    private int[] getTotalWins(int bluMercenary, int redMercenary) throws GameMapNotFoundException {
+        return GameModeGrid.getOverallGrid(mapName).getMatchupWins(bluMercenary, redMercenary);
     }
 
     public void addGameModeGrid(GameModeGrid grid) {
@@ -63,12 +68,32 @@ public class GameMap {
         gameModeGrids.get(gameMode).setMercenaryWins(bluMercenary, redMercenary, bluWins, redWins);
     }
 
-    public static void incrementWins(String mapName, int gameMode, int redMercenary, int bluMercenary, int team) throws GameMapNotFoundException, IndexOutOfBoundsException {
+    public static void incrementWins(String mapName, int gameMode, int bluMercenary, int redMercenary, int team) throws GameMapNotFoundException, IndexOutOfBoundsException {
         getMap(mapName).incrementWins(gameMode, team, bluMercenary, redMercenary);
     }
 
     private static List<GameModeGrid> getGameModeGrids(String mapName) throws GameMapNotFoundException {
         return getMap(mapName).getGameModeGrids();
+    }
+
+    public static int[] getTotalWins(String mapName, int gameMode, int bluMercenary, int redMercenary) throws GameMapNotFoundException {
+        int[] wins;
+        if (mapName.equals(Tracking.OVERALL_MAP))
+            wins = GameMap.getTotalWins(gameMode, bluMercenary, redMercenary);
+        else if (gameMode != -1)
+            wins = GameMap.getMap(mapName).getGameModeGrid(gameMode).getMatchupWins(bluMercenary, redMercenary);
+        else
+            wins = GameMap.getMap(mapName).getTotalWins(bluMercenary, redMercenary);
+        return wins;
+    }
+
+    private static int[] getTotalWins(int gameMode, int bluMercenary, int redMercenary) {
+        int[] wins;
+        if (gameMode == -1)
+            wins = GameModeGrid.getOverallWins(bluMercenary, redMercenary);
+        else
+            wins = GameModeGrid.getGameModeOverallGrid(gameMode).getMatchupWins(bluMercenary, redMercenary);
+        return wins;
     }
 
     public static GameMap getMap(String mapName) throws GameMapNotFoundException {

@@ -16,5 +16,6 @@ public class MapDropdownHandler implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
         ItemSelectable is = e.getItemSelectable();
         Tracking.setSelectedMap(selectedString(is));
+        Tracking.updateMatchupWinLabels();
     }
 }

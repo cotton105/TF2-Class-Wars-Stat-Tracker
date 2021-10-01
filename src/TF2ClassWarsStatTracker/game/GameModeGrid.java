@@ -20,6 +20,10 @@ public class GameModeGrid {
         this.mercenaryWins = mercenaryWins;
     }
 
+    public static int[] getOverallWins(int bluMercenary, int redMercenary) {
+        return getOverallGrid().getMatchupWins(bluMercenary, redMercenary);
+    }
+
     public void setMercenaryWins(int bluMercenary, int redMercenary, int bluWins, int redWins) {
         mercenaryWins[bluMercenary][redMercenary] = new int[] {bluWins, redWins};
     }
@@ -28,8 +32,12 @@ public class GameModeGrid {
         mercenaryWins[bluMercenary][redMercenary][team]++;
     }
 
-    public int[][][] getMercenaryWins() {
+    public int[][][] getMatchupWins() {
         return mercenaryWins;
+    }
+
+    public int[] getMatchupWins(int bluMercenary, int redMercenary) {
+        return mercenaryWins[bluMercenary][redMercenary];
     }
 
     public static GameModeGrid getOverallGrid() {
@@ -37,7 +45,7 @@ public class GameModeGrid {
         for (GameMap map : GameMap.getMaps()) {
             List<GameModeGrid> grids = map.getGameModeGrids();
             for (GameModeGrid grid : grids)
-                addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
+                addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
         }
         return new GameModeGrid(mercenaryWins);
     }
@@ -46,7 +54,7 @@ public class GameModeGrid {
         int[][][] mercenaryWins = new int[9][9][2];
         GameMap map = GameMap.getMap(mapName);
         for (GameModeGrid grid : map.getGameModeGrids())
-            addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
+            addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
         return new GameModeGrid(mercenaryWins);
     }
 
@@ -54,7 +62,7 @@ public class GameModeGrid {
         int[][][] mercenaryWins = new int[9][9][2];
         for (GameMap map : GameMap.getMaps()) {
             GameModeGrid grid = map.getGameModeGrid(gameMode);
-            addMercenaryWinsFromGrid(mercenaryWins, grid.getMercenaryWins());
+            addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
         }
         return new GameModeGrid(mercenaryWins);
     }
