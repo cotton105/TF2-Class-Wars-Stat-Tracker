@@ -22,6 +22,8 @@ public class Tracking extends JPanel {
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
     private static JPanel panMercenaryGrid;
+    private static JButton butRedWin;
+    private static JButton butBluWin;
 
     public Tracking() {
         super(new BorderLayout());
@@ -35,7 +37,6 @@ public class Tracking extends JPanel {
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
 
-        JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
 
         List<GameMap> maps = GameMap.getMaps();
         ArrayList<String> mapNames = new ArrayList<>();
@@ -53,13 +54,13 @@ public class Tracking extends JPanel {
         JPanel panBlu = new JPanel(new BorderLayout());
         JPanel panBluHeader = new JPanel(new FlowLayout());
         JLabel labBlu = new JLabel("BLU");
-        JButton butBluWin = new JButton("WIN");
+        butBluWin = new JButton("WIN");
         butBluWin.addActionListener(new RecordWinButtonHandler(Constants.BLU));
 
         JPanel panRed = new JPanel(new BorderLayout());
         JPanel panRedHeader = new JPanel(new FlowLayout());
         JLabel labRed = new JLabel("RED");
-        JButton butRedWin = new JButton("WIN");
+        butRedWin = new JButton("WIN");
         butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
 
         JPanel panBluClassSelect = new JPanel(new GridLayout(3,3));
@@ -133,14 +134,22 @@ public class Tracking extends JPanel {
         panMercenaryGrid.removeAll();
         GameModeGrid grid;
         try {
-            if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1)
+            if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1) {
+                setWinButtonAvailability(false);
                 grid = GameModeGrid.getOverallGrid();
-            else if (selectedGameMode == -1)
-                    grid = GameModeGrid.getOverallGrid(selectedMap);
-            else if (selectedMap.equals(OVERALL_MAP))
+            }
+            else if (selectedGameMode == -1) {
+                setWinButtonAvailability(false);
+                grid = GameModeGrid.getOverallGrid(selectedMap);
+            }
+            else if (selectedMap.equals(OVERALL_MAP)) {
+                setWinButtonAvailability(false);
                 grid = GameModeGrid.getGameModeOverallGrid(selectedGameMode);
-            else
+            }
+            else {
+                setWinButtonAvailability(true);
                 grid = GameMap.getMap(selectedMap).getGameModeGrid(selectedGameMode);
+            }
         } catch (GameMapNotFoundException ex) {
             Print.error(ex.getMessage());
             ex.printStackTrace();
@@ -148,6 +157,11 @@ public class Tracking extends JPanel {
         }
         fillGrid(grid);
         panMercenaryGrid.revalidate();
+    }
+
+    private static void setWinButtonAvailability(boolean available) {
+        butBluWin.setEnabled(available);
+        butRedWin.setEnabled(available);
     }
 
     private static void fillGrid(GameModeGrid grid) {
