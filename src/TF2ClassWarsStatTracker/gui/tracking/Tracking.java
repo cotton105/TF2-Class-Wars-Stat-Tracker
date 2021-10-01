@@ -5,7 +5,6 @@ import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.util.Calculate;
 import TF2ClassWarsStatTracker.util.Constants;
-import TF2ClassWarsStatTracker.util.JSONHandler;
 import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
@@ -17,13 +16,14 @@ import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
 import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
 
 public class Tracking extends JPanel {
-    private static final String OVERALL_MAP = "OVERALL";
+    private static final String OVERALL_MAP = "Overall scores";
     private static String selectedMap;
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
     private static JLabel labSelectedBluMerc, labSelectedRedMerc;
     private static JPanel panMercenaryGrid;
     private static JButton butRedWin;
     private static JButton butBluWin;
+    private static JComboBox<String> mapDropdownSelect;
 
     public Tracking() {
         super(new BorderLayout());
@@ -43,10 +43,10 @@ public class Tracking extends JPanel {
         for (GameMap map : maps)
             mapNames.add(map.getMapName());
         selectedMap = OVERALL_MAP;  // Set default to the overall scores
-        JComboBox<String> mapDropdownSelect = new JComboBox<>();
+        mapDropdownSelect = new JComboBox<>();
+        mapDropdownSelect.addItem(OVERALL_MAP);
         for (Object mapName : mapNames.toArray())
             mapDropdownSelect.addItem(mapName.toString());
-        mapDropdownSelect.setSelectedIndex(0);
         mapDropdownSelect.addItemListener(new MapDropdownHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
@@ -78,6 +78,8 @@ public class Tracking extends JPanel {
         }
         labSelectedRedMerc = new JLabel("No selected mercenary");
 
+        JPanel panSelectedGameInfo = new JPanel(new GridLayout(2, 1));
+        JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
         JPanel panGameModeSelect = new JPanel(new GridLayout(1, 5));
         ButtonGroup gameModeSelectGroup = new ButtonGroup();
         for (int i=0; i<6; i++) {
@@ -95,7 +97,6 @@ public class Tracking extends JPanel {
             gameModeSelectGroup.add(radGameMode);
             panGameModeSelect.add(radGameMode);
         }
-
         panMercenaryGrid = new JPanel(new GridLayout(10, 10));
 
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
@@ -104,13 +105,10 @@ public class Tracking extends JPanel {
         panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         panRed.setBorder(BorderFactory.createLineBorder(Color.RED));
 
-        add(panMenuBar, BorderLayout.PAGE_START);
+        add(panMenuBar, BorderLayout.NORTH);
         panMenuBar.add(butBack, BorderLayout.WEST);
-        panMenuBar.add(butOverall, BorderLayout.EAST);
         add(panLeft, BorderLayout.WEST);
-        panLeft.add(panSelectedMapInfo, BorderLayout.LINE_START);
-        panSelectedMapInfo.add(mapDropdownSelect);
-        panLeft.add(panBluVsRed, BorderLayout.PAGE_END);
+        panLeft.add(panBluVsRed, BorderLayout.SOUTH);
         panBluVsRed.add(panBlu, BorderLayout.WEST);
         panBlu.add(panBluHeader, BorderLayout.NORTH);
         panBluHeader.add(labBlu);
@@ -123,7 +121,12 @@ public class Tracking extends JPanel {
         panRedHeader.add(butRedWin);
         panRed.add(panRedClassSelect, BorderLayout.CENTER);
         panRed.add(labSelectedRedMerc, BorderLayout.SOUTH);
-        panRight.add(panGameModeSelect, BorderLayout.NORTH);
+
+        panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
+        panSelectedGameInfo.add(panSelectedMapInfo);
+        panSelectedMapInfo.add(mapDropdownSelect);
+        panSelectedMapInfo.add(butOverall);
+        panSelectedGameInfo.add(panGameModeSelect);
         panRight.add(panMercenaryGrid, BorderLayout.CENTER);
         add(panRight, BorderLayout.EAST);
 
@@ -201,11 +204,6 @@ public class Tracking extends JPanel {
         }
     }
 
-    static void viewOverall() {
-        setSelectedMap(OVERALL_MAP);
-        // TODO: Can't click back to the map that was previously selected before the "Overall" button was clicked
-    }
-
     static void setSelectedMercenary(int team, int mercenary) {
         if (team == Constants.BLU) {
             selectedBluMercenary = mercenary;
@@ -224,6 +222,11 @@ public class Tracking extends JPanel {
 
     static String getSelectedMap() {
         return selectedMap;
+    }
+
+    static void viewOverall() {
+        setSelectedMap(OVERALL_MAP);
+        mapDropdownSelect.setSelectedItem(OVERALL_MAP);
     }
 
     static void setSelectedGameMode(int gameMode) {
