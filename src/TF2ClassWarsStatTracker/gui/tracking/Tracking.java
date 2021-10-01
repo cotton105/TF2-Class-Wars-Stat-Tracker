@@ -50,7 +50,6 @@ public class Tracking extends JPanel {
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
-
         JPanel panBlu = new JPanel(new BorderLayout());
         JPanel panBluHeader = new JPanel(new FlowLayout());
         JLabel labBlu = new JLabel("BLU");
@@ -154,6 +153,7 @@ public class Tracking extends JPanel {
     private static void fillGrid(GameModeGrid grid) {
         for (int row=0; row<10; row++) {
             for (int column=0; column<10; column++) {
+                Color buttonBorderColour = Color.BLACK;
                 JComponent gridElement;
                 if (row == 0 && column > 0) {  // BLU mercenaries (first row)
                     gridElement = new JLabel(Constants.MERCENARY[column-1]);
@@ -171,20 +171,16 @@ public class Tracking extends JPanel {
                     if (!Float.isNaN(ratioBias)) {
                         buttonStr = String.format("%.2f", ratioBias);
                         buttonColour = Calculate.getColourScaledFromWhite(ratioBias, BLU_COLOUR, RED_COLOUR);
-//                        if (ratioBias > 0)
-//                            buttonColour = RED_COLOUR;
-//                        else if (ratioBias < 0)
-//                            buttonColour = BLU_COLOUR;
                     } else
                         buttonStr = "";
                     gridElement = new JButton(buttonStr);
                     gridElement.setBackground(buttonColour);
-//                    gridElement.addlistener
                     ((JButton)gridElement).addActionListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
-//                    gridElement.addMouseListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
+                    if (column-1 == selectedBluMercenary && row-1 == selectedRedMercenary)
+                        buttonBorderColour = Color.YELLOW;
                 }
                 gridElement.setOpaque(true);
-                gridElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                gridElement.setBorder(BorderFactory.createLineBorder(buttonBorderColour));
                 gridElement.setPreferredSize(new Dimension(65, 65));
                 panMercenaryGrid.add(gridElement);
             }
