@@ -28,7 +28,7 @@ public class RecordWinButtonHandler implements ActionListener {
             JOptionPane.showMessageDialog(Start.getTrackerScreen(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Print.error(ex.getMessage());
         }
-        Tracking.updateMatchupWinLabels();
+        Tracking.updateGamesPlayedLabels();
         Tracking.reloadGrid();
     }
 }

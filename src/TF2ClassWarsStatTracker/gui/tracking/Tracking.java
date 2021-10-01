@@ -24,7 +24,7 @@ public class Tracking extends JPanel {
     private static JButton butRedWin;
     private static JButton butBluWin;
     private static JComboBox<String> mapDropdownSelect;
-    private static JLabel labBluGamesWon, labRedGamesWon;
+    private static JLabel labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
 
     public Tracking() {
         super(new BorderLayout());
@@ -82,22 +82,18 @@ public class Tracking extends JPanel {
         labSelectedRedMerc = new JLabel("Selected: ");
         labRedGamesWon = new JLabel();
 
-        JPanel panSelectedGameInfo = new JPanel(new GridLayout(2, 1));
+        JPanel panSelectedGameInfo = new JPanel(new GridLayout(3, 1));
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
+        labGamesPlayedTotal = new JLabel();
         JPanel panGameModeSelect = new JPanel(new GridLayout(1, 5));
         ButtonGroup gameModeSelectGroup = new ButtonGroup();
-        for (int i=0; i<6; i++) {
-            JRadioButton radGameMode;
-            int gameMode;
-            if (i != 0) {
-                radGameMode = new JRadioButton(GameModeGrid.GAME_MODE[i-1]);
-                gameMode = i-1;
-                radGameMode.addItemListener(new GameModeSelectHandler(i-1));
-            } else {
-                radGameMode = new JRadioButton("Overall", true);
-                gameMode = -1;
-            }
-            radGameMode.addItemListener(new GameModeSelectHandler(gameMode));
+        JRadioButton radOverall = new JRadioButton("Overall", true);
+        radOverall.addItemListener(new GameModeSelectHandler(-1));
+        gameModeSelectGroup.add(radOverall);
+        panGameModeSelect.add(radOverall);
+        for (int i=0; i<5; i++) {
+            JRadioButton radGameMode = new JRadioButton(GameModeGrid.GAME_MODE[i]);
+            radGameMode.addItemListener(new GameModeSelectHandler(i));
             gameModeSelectGroup.add(radGameMode);
             panGameModeSelect.add(radGameMode);
         }
@@ -137,8 +133,9 @@ public class Tracking extends JPanel {
         panSelectedMapInfo.add(mapDropdownSelect);
         panSelectedMapInfo.add(butOverall);
         panSelectedGameInfo.add(panGameModeSelect);
-        panRight.add(panMercenaryGrid, BorderLayout.CENTER);
+        panSelectedGameInfo.add(labGamesPlayedTotal);
         add(panRight, BorderLayout.EAST);
+        panRight.add(panMercenaryGrid, BorderLayout.CENTER);
 
         reloadGrid();
     }
@@ -256,10 +253,10 @@ public class Tracking extends JPanel {
         return selectedRedMercenary;
     }
 
-    static void updateMatchupWinLabels() {
+    static void updateGamesPlayedLabels() {
         if (0 <= selectedBluMercenary && selectedBluMercenary < 9 && 0 <= selectedRedMercenary && selectedRedMercenary < 9) {
             try {
-                int[] totalWins = GameMap.getTotalWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
+                int[] totalWins = GameMap.getMatchupWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
                 String bluGamesWonText = String.format("Won: %d", totalWins[0]);
                 String redGamesWonText = String.format("Won: %d", totalWins[1]);
                 labBluGamesWon.setText(bluGamesWonText);
@@ -267,6 +264,12 @@ public class Tracking extends JPanel {
             } catch (GameMapNotFoundException ex) {
                 ex.printStackTrace();
             }
+        }
+        try {
+            int totalGames = GameMap.getTotalGames(selectedMap, selectedGameMode);
+            labGamesPlayedTotal.setText(String.format("Total games recorded in this configuration: %d", totalGames));
+        } catch (GameMapNotFoundException ex) {
+            ex.printStackTrace();
         }
     }
 }

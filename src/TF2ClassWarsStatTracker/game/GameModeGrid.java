@@ -20,10 +20,6 @@ public class GameModeGrid {
         this.mercenaryWins = mercenaryWins;
     }
 
-    public static int[] getOverallWins(int bluMercenary, int redMercenary) {
-        return getOverallGrid().getMatchupWins(bluMercenary, redMercenary);
-    }
-
     public void setMercenaryWins(int bluMercenary, int redMercenary, int bluWins, int redWins) {
         mercenaryWins[bluMercenary][redMercenary] = new int[] {bluWins, redWins};
     }
@@ -35,6 +31,15 @@ public class GameModeGrid {
     public int[][][] getMatchupWins() {
         return mercenaryWins;
     }
+
+//    private int getTotalGames() {
+//        int total = 0;
+//        for (int[][] bluMercenary : mercenaryWins)
+//            for (int[] redMercenary : bluMercenary)
+//                for (int winCount : redMercenary)
+//                    total += winCount;
+//        return total;
+//    }
 
     public int[] getMatchupWins(int bluMercenary, int redMercenary) {
         return mercenaryWins[bluMercenary][redMercenary];
@@ -66,6 +71,14 @@ public class GameModeGrid {
         }
         return new GameModeGrid(mercenaryWins);
     }
+
+//    public static int[] getOverallWins(int bluMercenary, int redMercenary) {
+//        return getOverallGrid().getMatchupWins(bluMercenary, redMercenary);
+//    }
+
+//    public static int getOverallGamesPlayed() {
+//        return getOverallGrid().getTotalGames();
+//    }
 
     public static GameModeGrid getEmptyGrid() {
         return new GameModeGrid();
