@@ -1,5 +1,5 @@
 # Project exclude paths
 /out/
 /.idea/
-/res/maps.json
 *.iml
+/src/main/resources/maps.json
