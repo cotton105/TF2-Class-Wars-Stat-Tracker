@@ -1,16 +1,20 @@
 package TF2ClassWarsStatTracker.util;
 
+import TF2ClassWarsStatTracker.game.GameMap;
 import com.google.gson.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class FileHandler {
-    public static final String MAPS_JSON = "/maps.json";
+    public static final String MAPS_JSON = "res/maps.json";
 
     public static ArrayList<String> readTextFileLines(String filename) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
@@ -41,27 +45,21 @@ public class FileHandler {
     }
 
     public static JsonArray readJSONArray(String filename) throws FileNotFoundException {
-        InputStream is = FileHandler.class.getResourceAsStream(filename);
-        if (is == null)
-            throw new FileNotFoundException(String.format("File \"%s\" not found.", filename));
-        Reader reader = new InputStreamReader(is);
+        Reader reader = new InputStreamReader(new FileInputStream(filename));
         JsonElement element = JsonParser.parseReader(reader);
         return element.getAsJsonArray();
     }
 
     public static List<String[]> readCSVLines(String filename) throws IOException {
-        try (InputStream is = FileHandler.class.getResourceAsStream(filename)) {
-            if (is == null)
-                throw new FileNotFoundException(filename);
-            try {
-                CSVReader reader = new CSVReader(new InputStreamReader(is));
-                return reader.readAll();
-            } catch (IOException | CsvException ex) {
-                Print.error(ex.getMessage());
-                ex.printStackTrace();
-            }
+        try {
+            InputStreamReader is = new InputStreamReader(new FileInputStream(filename));
+            CSVReader csvReader = new CSVReader(is);
+            return csvReader.readAll();
+        } catch (CsvException ex) {
+            Print.error(ex.getMessage());
+            ex.printStackTrace();
         }
-        throw new NullPointerException();
+        throw new FileNotFoundException();
     }
 
     public static List<File> getFilesInDirectory(File directory) {
@@ -73,6 +71,36 @@ public class FileHandler {
                 fileList.add(file);
         }
         return fileList;
+    }
+
+    public static void initialiseJsonMapsFile() {
+        try {
+            File file = new File(FileHandler.MAPS_JSON);
+            String dirPath = MAPS_JSON.substring(0, MAPS_JSON.lastIndexOf("/") + 1);
+            createDirectory(dirPath);
+            if (file.createNewFile())
+                Print.format("File %s created", MAPS_JSON);
+            else
+                Print.format("File %s already exists.", MAPS_JSON);
+            List<GameMap> maps = new ArrayList<>();
+            writeToJSONFile(maps, MAPS_JSON);
+        } catch (IOException ex) {
+            Print.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public static void createDirectory(String newPath) {
+        if (Files.isDirectory(Paths.get(newPath)))
+            Print.format("Path %s already exists.", newPath);
+        else {
+            Path path = Paths.get(newPath);
+            try {
+                Files.createDirectories(path);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     public static String removeFileExtension(String filename) {

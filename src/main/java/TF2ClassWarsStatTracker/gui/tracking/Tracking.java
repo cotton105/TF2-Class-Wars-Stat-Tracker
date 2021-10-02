@@ -92,7 +92,7 @@ public class Tracking extends JPanel {
         gameModeSelectGroup.add(radOverall);
         panGameModeSelect.add(radOverall);
         for (int i=0; i<5; i++) {
-            JRadioButton radGameMode = new JRadioButton(GameModeGrid.GAME_MODE[i]);
+            JRadioButton radGameMode = new JRadioButton(GameModeGrid.GAME_MODES[i]);
             radGameMode.addItemListener(new GameModeSelectHandler(i));
             gameModeSelectGroup.add(radGameMode);
             panGameModeSelect.add(radGameMode);

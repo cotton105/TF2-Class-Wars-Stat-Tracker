@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GameModeGrid {
     public final static int NORMAL = 0, GLOBAL_ROLLS = 1, MADNESS = 2, MULTIPLY_WEAPONS_STATS = 3, GOOD_ROLLS = 4;
-    public final static String[] GAME_MODE = new String[] {
+    public final static String[] GAME_MODES = new String[] {
             "Normal", "Global Rolls",
             "Madness", "Multiply Weapons' Stats",
             "Good Rolls"};
@@ -31,15 +31,6 @@ public class GameModeGrid {
     public int[][][] getMatchupWins() {
         return mercenaryWins;
     }
-
-//    private int getTotalGames() {
-//        int total = 0;
-//        for (int[][] bluMercenary : mercenaryWins)
-//            for (int[] redMercenary : bluMercenary)
-//                for (int winCount : redMercenary)
-//                    total += winCount;
-//        return total;
-//    }
 
     public int[] getMatchupWins(int bluMercenary, int redMercenary) {
         return mercenaryWins[bluMercenary][redMercenary];
@@ -71,14 +62,6 @@ public class GameModeGrid {
         }
         return new GameModeGrid(mercenaryWins);
     }
-
-//    public static int[] getOverallWins(int bluMercenary, int redMercenary) {
-//        return getOverallGrid().getMatchupWins(bluMercenary, redMercenary);
-//    }
-
-//    public static int getOverallGamesPlayed() {
-//        return getOverallGrid().getTotalGames();
-//    }
 
     public static GameModeGrid getEmptyGrid() {
         return new GameModeGrid();

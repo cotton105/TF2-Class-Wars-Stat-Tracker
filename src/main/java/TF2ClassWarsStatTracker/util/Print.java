@@ -8,7 +8,7 @@ public class Print {
     private final static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     public static void print(String msg) {
-        Print.timestamp(msg);
+        print(msg, true);
     }
 
     public static void print(String msg, boolean timestamp) {
@@ -18,6 +18,11 @@ public class Print {
             System.out.println(msg);
         }
     }
+
+    public static void format(String msg, Object ... args) {
+        print(String.format(msg, args));
+    }
+
     /**
      * Print a string with a timestamp prepended.
      * @param str message to output.
