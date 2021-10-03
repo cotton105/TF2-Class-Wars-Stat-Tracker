@@ -29,13 +29,10 @@ public class Tracking extends TrackingGUIJPanel {
     public Tracking() {
         super(new BorderLayout());
 
-        JPanel panMenuBar = new JPanel(new BorderLayout());
+        JPanel panMenuBar = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton butBack = new JButton("Back");
-        butBack.addActionListener(new MenuBarButtonHandler(MenuBarButtonHandler.MENU));
-        JButton butOverall = new JButton("View Overall");
-        butOverall.addActionListener(new MenuBarButtonHandler(MenuBarButtonHandler.OVERALL));
+        butBack.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.BACK));
 
-        JPanel panContent = new JPanel(new GridLayout(1,2));
 
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
@@ -83,6 +80,8 @@ public class Tracking extends TrackingGUIJPanel {
         labSelectedRedMerc = new JLabel("Selected: ");
         labRedGamesWon = new JLabel();
 
+        JButton butViewOverallMap = new JButton("View Overall");
+        butViewOverallMap.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.OVERALL));
         JPanel panSelectedGameInfo = new JPanel(new GridLayout(3, 1));
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
         labGamesPlayedTotal = new JLabel();
@@ -93,54 +92,64 @@ public class Tracking extends TrackingGUIJPanel {
         gameModeSelectGroup.add(radOverall);
         panGameModeSelect.add(radOverall);
         for (int i=0; i<5; i++) {
-            JRadioButton radGameMode = new JRadioButton(GameModeGrid.GAME_MODES[i]);
+            JRadioButton radGameMode = new JRadioButton(String.format("<html>%s</html>", GameModeGrid.GAME_MODES[i]));
             radGameMode.addItemListener(new GameModeSelectHandler(i));
+            radGameMode.setPreferredSize(new Dimension(150, 50));
             gameModeSelectGroup.add(radGameMode);
             panGameModeSelect.add(radGameMode);
         }
-        panMercenaryGrid = new JPanel(new GridLayout(10, 10));
+        panMercenaryGrid = new JPanel(new GridLayout(10, 10, -1, -1));
 
         // Set Borders everywhere
-        setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        setBorder(BorderFactory.createEmptyBorder(0,20,20,20));
         panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panRight.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        panRed.setBorder(BorderFactory.createLineBorder(Color.RED));
+        panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+        panRed.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 
         // JComponent parent-child structure
         add(panMenuBar, BorderLayout.NORTH);
-        panMenuBar.add(butBack, BorderLayout.WEST);
-        add(panContent, BorderLayout.CENTER);
-        panContent.add(panLeft);
+        add(panLeft, BorderLayout.WEST);
+        add(panRight, BorderLayout.CENTER);
+
+        panMenuBar.add(butBack);
+
         panLeft.add(panBluVsRed, BorderLayout.SOUTH);
-        panBluVsRed.add(panBlu, BorderLayout.WEST);
+
+        panBluVsRed.add(panBlu, BorderLayout.NORTH);
+        panBluVsRed.add(panRed, BorderLayout.SOUTH);
+
         panBlu.add(panBluHeader, BorderLayout.NORTH);
-        panBluHeader.add(labBlu);
-        panBluHeader.add(butBluWin);
         panBlu.add(panBluClassSelect, BorderLayout.CENTER);
         panBlu.add(panSelectedBluInfo, BorderLayout.SOUTH);
+
+        panBluHeader.add(labBlu);
+        panBluHeader.add(butBluWin);
+
         panSelectedBluInfo.add(labSelectedBluMerc);
         panSelectedBluInfo.add(labBluGamesWon);
-        panBluVsRed.add(panRed, BorderLayout.EAST);
+
         panRed.add(panRedHeader, BorderLayout.NORTH);
-        panRedHeader.add(labRed);
-        panRedHeader.add(butRedWin);
         panRed.add(panRedClassSelect, BorderLayout.CENTER);
         panRed.add(panSelectedRedInfo, BorderLayout.SOUTH);
+
+        panRedHeader.add(labRed);
+        panRedHeader.add(butRedWin);
+
         panSelectedRedInfo.add(labSelectedRedMerc);
         panSelectedRedInfo.add(labRedGamesWon);
 
-        panContent.add(panRight);
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
+        panRight.add(panMercenaryGrid, BorderLayout.CENTER);
+
         panSelectedGameInfo.add(panSelectedMapInfo);
-        panSelectedMapInfo.add(mapDropdownSelect);
-        panSelectedMapInfo.add(butOverall);
-        // TODO: Add button to create a new map
-//        panSelectedMapInfo.add(butAddNewMap);
-        panSelectedMapInfo.add(butOverall);
         panSelectedGameInfo.add(panGameModeSelect);
         panSelectedGameInfo.add(labGamesPlayedTotal);
-        panRight.add(panMercenaryGrid, BorderLayout.CENTER);
+
+        panSelectedMapInfo.add(mapDropdownSelect);
+        panSelectedMapInfo.add(butViewOverallMap);
+
+        // TODO: Add button to create a new map
 
         setDefaultFont(this, TF2secondary);
         reloadGrid();
