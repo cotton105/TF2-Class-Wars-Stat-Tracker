@@ -3,6 +3,7 @@ package TF2ClassWarsStatTracker.gui.tracking;
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
+import TF2ClassWarsStatTracker.gui.TrackingGUIJPanel;
 import TF2ClassWarsStatTracker.util.Calculate;
 import TF2ClassWarsStatTracker.util.Constants;
 import TF2ClassWarsStatTracker.util.Print;
@@ -15,16 +16,15 @@ import java.util.List;
 import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
 import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
 
-public class Tracking extends JPanel {
+public class Tracking extends TrackingGUIJPanel {
     public static final String OVERALL_MAP = "Overall scores";
     private static String selectedMap;
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
-    private static JLabel labSelectedBluMerc, labSelectedRedMerc;
+    private static JLabel labSelectedBluMerc, labSelectedRedMerc, labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
     private static JPanel panMercenaryGrid;
-    private static JButton butRedWin;
-    private static JButton butBluWin;
+    private static JButton butBluWin, butRedWin;
     private static JComboBox<String> mapDropdownSelect;
-    private static JLabel labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
+    private static JTextField fieldNewMap;
 
     public Tracking() {
         super(new BorderLayout());
@@ -35,9 +35,10 @@ public class Tracking extends JPanel {
         JButton butOverall = new JButton("View Overall");
         butOverall.addActionListener(new MenuBarButtonHandler(MenuBarButtonHandler.OVERALL));
 
+        JPanel panContent = new JPanel(new GridLayout(1,2));
+
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
-
 
         List<GameMap> maps = GameMap.getMaps();
         ArrayList<String> mapNames = new ArrayList<>();
@@ -109,7 +110,8 @@ public class Tracking extends JPanel {
         // JComponent parent-child structure
         add(panMenuBar, BorderLayout.NORTH);
         panMenuBar.add(butBack, BorderLayout.WEST);
-        add(panLeft, BorderLayout.WEST);
+        add(panContent, BorderLayout.CENTER);
+        panContent.add(panLeft);
         panLeft.add(panBluVsRed, BorderLayout.SOUTH);
         panBluVsRed.add(panBlu, BorderLayout.WEST);
         panBlu.add(panBluHeader, BorderLayout.NORTH);
@@ -128,17 +130,19 @@ public class Tracking extends JPanel {
         panSelectedRedInfo.add(labSelectedRedMerc);
         panSelectedRedInfo.add(labRedGamesWon);
 
+        panContent.add(panRight);
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
         panSelectedGameInfo.add(panSelectedMapInfo);
         panSelectedMapInfo.add(mapDropdownSelect);
+        panSelectedMapInfo.add(butOverall);
         // TODO: Add button to create a new map
 //        panSelectedMapInfo.add(butAddNewMap);
         panSelectedMapInfo.add(butOverall);
         panSelectedGameInfo.add(panGameModeSelect);
         panSelectedGameInfo.add(labGamesPlayedTotal);
-        add(panRight, BorderLayout.EAST);
         panRight.add(panMercenaryGrid, BorderLayout.CENTER);
 
+        setDefaultFont(this, TF2secondary);
         reloadGrid();
         updateGamesPlayedLabels();
     }
@@ -185,11 +189,14 @@ public class Tracking extends JPanel {
                 if (row == 0 && column > 0) {  // BLU mercenaries (first row)
                     gridElement = new JLabel(Constants.MERCENARY[column-1]);
                     gridElement.setBackground(BLU_COLOUR);
+                    ((JLabel)gridElement).setHorizontalAlignment(JLabel.CENTER);
                 } else if (row == 0) {
                     gridElement = new JLabel("RED \\ BLU");
+                    ((JLabel)gridElement).setHorizontalAlignment(JLabel.CENTER);
                 } else if (column == 0) {  // RED mercenaries (first column)
                     gridElement = new JLabel(Constants.MERCENARY[row-1]);
                     gridElement.setBackground(RED_COLOUR);
+                    ((JLabel)gridElement).setHorizontalAlignment(JLabel.CENTER);
                 } else {  // Add button to select relevant match-up on the left panel
                     int[] matchupScores = grid.getMatchupWins()[column-1][row-1];
                     float ratioBias = Calculate.getRatioBias(matchupScores[0], matchupScores[1]);
@@ -209,6 +216,7 @@ public class Tracking extends JPanel {
                 gridElement.setOpaque(true);
                 gridElement.setBorder(BorderFactory.createLineBorder(buttonBorderColour));
                 gridElement.setPreferredSize(new Dimension(65, 65));
+                gridElement.setFont(TF2secondary);
                 panMercenaryGrid.add(gridElement);
             }
         }
