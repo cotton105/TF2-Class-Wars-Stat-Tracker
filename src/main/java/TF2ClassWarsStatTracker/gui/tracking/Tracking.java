@@ -131,6 +131,8 @@ public class Tracking extends JPanel {
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
         panSelectedGameInfo.add(panSelectedMapInfo);
         panSelectedMapInfo.add(mapDropdownSelect);
+        // TODO: Add button to create a new map
+//        panSelectedMapInfo.add(butAddNewMap);
         panSelectedMapInfo.add(butOverall);
         panSelectedGameInfo.add(panGameModeSelect);
         panSelectedGameInfo.add(labGamesPlayedTotal);
@@ -138,6 +140,7 @@ public class Tracking extends JPanel {
         panRight.add(panMercenaryGrid, BorderLayout.CENTER);
 
         reloadGrid();
+        updateGamesPlayedLabels();
     }
 
     static void reloadGrid() {
