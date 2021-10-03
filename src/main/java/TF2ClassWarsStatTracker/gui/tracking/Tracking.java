@@ -1,5 +1,6 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
+import TF2ClassWarsStatTracker.AppDataHandler;
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
@@ -33,11 +34,10 @@ public class Tracking extends TrackingGUIJPanel {
         JButton butBack = new JButton("Back");
         butBack.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.BACK));
 
-
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
 
-        List<GameMap> maps = GameMap.getMaps();
+        List<GameMap> maps = AppDataHandler.getMaps();
         ArrayList<String> mapNames = new ArrayList<>();
         for (GameMap map : maps)
             mapNames.add(map.getMapName());
@@ -162,19 +162,19 @@ public class Tracking extends TrackingGUIJPanel {
         try {
             if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1) {
                 setWinButtonAvailability(false);
-                grid = GameModeGrid.getOverallGrid();
+                grid = AppDataHandler.getOverallGrid();
             }
             else if (selectedGameMode == -1) {
                 setWinButtonAvailability(false);
-                grid = GameModeGrid.getOverallGrid(selectedMap);
+                grid = AppDataHandler.getOverallGrid(selectedMap);
             }
             else if (selectedMap.equals(OVERALL_MAP)) {
                 setWinButtonAvailability(false);
-                grid = GameModeGrid.getGameModeOverallGrid(selectedGameMode);
+                grid = AppDataHandler.getGameModeOverallGrid(selectedGameMode);
             }
             else {
                 setWinButtonAvailability(true);
-                grid = GameMap.getMap(selectedMap).getGameModeGrid(selectedGameMode);
+                grid = AppDataHandler.getMap(selectedMap).getGameModeGrid(selectedGameMode);
             }
         } catch (GameMapNotFoundException ex) {
             Print.error(ex.getMessage());
@@ -278,7 +278,7 @@ public class Tracking extends TrackingGUIJPanel {
     static void updateGamesPlayedLabels() {
         if (0 <= selectedBluMercenary && selectedBluMercenary < 9 && 0 <= selectedRedMercenary && selectedRedMercenary < 9) {
             try {
-                int[] totalWins = GameMap.getMatchupWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
+                int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
                 String bluGamesWonText = String.format("Won: %d", totalWins[0]);
                 String redGamesWonText = String.format("Won: %d", totalWins[1]);
                 labBluGamesWon.setText(bluGamesWonText);
@@ -288,7 +288,7 @@ public class Tracking extends TrackingGUIJPanel {
             }
         }
         try {
-            int totalGames = GameMap.getTotalGames(selectedMap, selectedGameMode);
+            int totalGames = AppDataHandler.getTotalGames(selectedMap, selectedGameMode);
             labGamesPlayedTotal.setText(String.format("Total games recorded in this configuration: %d", totalGames));
         } catch (GameMapNotFoundException ex) {
             ex.printStackTrace();

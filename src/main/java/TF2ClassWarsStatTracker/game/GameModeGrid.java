@@ -1,9 +1,5 @@
 package TF2ClassWarsStatTracker.game;
 
-import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
-
-import java.util.List;
-
 public class GameModeGrid {
     public final static int NORMAL = 0, GLOBAL_ROLLS = 1, MADNESS = 2, MULTIPLY_WEAPONS_STATS = 3, GOOD_ROLLS = 4;
     public final static String[] GAME_MODES = new String[] {
@@ -16,7 +12,7 @@ public class GameModeGrid {
         mercenaryWins = new int[9][9][2];
     }
 
-    private GameModeGrid(int[][][] mercenaryWins) {
+    public GameModeGrid(int[][][] mercenaryWins) {
         this.mercenaryWins = mercenaryWins;
     }
 
@@ -36,41 +32,7 @@ public class GameModeGrid {
         return mercenaryWins[bluMercenary][redMercenary];
     }
 
-    public static GameModeGrid getOverallGrid() {
-        int[][][] mercenaryWins = new int[9][9][2];
-        for (GameMap map : GameMap.getMaps()) {
-            List<GameModeGrid> grids = map.getGameModeGrids();
-            for (GameModeGrid grid : grids)
-                addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
-        }
-        return new GameModeGrid(mercenaryWins);
-    }
-
-    public static GameModeGrid getOverallGrid(String mapName) throws GameMapNotFoundException {
-        int[][][] mercenaryWins = new int[9][9][2];
-        GameMap map = GameMap.getMap(mapName);
-        for (GameModeGrid grid : map.getGameModeGrids())
-            addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
-        return new GameModeGrid(mercenaryWins);
-    }
-
-    public static GameModeGrid getGameModeOverallGrid(int gameMode) {
-        int[][][] mercenaryWins = new int[9][9][2];
-        for (GameMap map : GameMap.getMaps()) {
-            GameModeGrid grid = map.getGameModeGrid(gameMode);
-            addMercenaryWinsFromGrid(mercenaryWins, grid.getMatchupWins());
-        }
-        return new GameModeGrid(mercenaryWins);
-    }
-
     public static GameModeGrid getEmptyGrid() {
         return new GameModeGrid();
-    }
-
-    private static void addMercenaryWinsFromGrid(int[][][] subjectGrid, int[][][] existingGrid) {
-        for (int i=0; i<existingGrid.length; i++)
-            for (int j=0; j<existingGrid[0].length; j++)
-                for (int k=0; k<existingGrid[0][0].length; k++)
-                    subjectGrid[i][j][k] += existingGrid[i][j][k];
     }
 }
