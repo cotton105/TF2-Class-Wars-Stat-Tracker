@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class FileHandler {
-    public static final String MAPS_JSON = "res/maps.json";
+    public static final String MAPS_JSON = "res\\maps.json";
 
     public static ArrayList<String> readTextFileLines(String filename) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
