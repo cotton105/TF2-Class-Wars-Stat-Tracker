@@ -2,3 +2,4 @@
 /out/
 /.idea/
 *.iml
+/src/main/resources/maps.json
