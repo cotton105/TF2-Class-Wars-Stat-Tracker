@@ -3,7 +3,7 @@ package TF2ClassWarsStatTracker.game;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameMap {
+public class GameMap implements Comparable<GameMap> {
     private final String mapName;
     private final List<GameModeGrid> gameModeGrids;
 
@@ -50,4 +50,12 @@ public class GameMap {
         gameModeGrids.get(gameMode).setMercenaryWins(bluMercenary, redMercenary, bluWins, redWins);
     }
 
+    @Override
+    public int compareTo(GameMap gameMap) {
+        return getMapName().compareTo(gameMap.getMapName());
+    }
+
+    public static boolean validMapName(String mapName) {
+        return (mapName != null && !mapName.equals("") && !mapName.contains(" "));
+    }
 }

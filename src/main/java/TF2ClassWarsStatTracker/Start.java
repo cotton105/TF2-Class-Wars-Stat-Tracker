@@ -55,6 +55,10 @@ public class Start {
         frame.setJMenuBar(menuBar);
     }
 
+    public static JFrame getFrame() {
+        return frame;
+    }
+
     public static void setActiveContentPane(JComponent panel) {
         panel.setOpaque(true);
         frame.setContentPane(panel);

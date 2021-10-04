@@ -5,7 +5,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class MapDropdownHandler implements ItemListener {
-    MapDropdownHandler() {}
+    private static boolean mapBeingAdded;
+
+    MapDropdownHandler() {
+        mapBeingAdded = false;
+    }
 
     static private String selectedString(ItemSelectable is) {
         Object[] selected = is.getSelectedObjects();
@@ -14,8 +18,14 @@ public class MapDropdownHandler implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        ItemSelectable is = e.getItemSelectable();
-        Tracking.setSelectedMap(selectedString(is));
-        Tracking.updateGamesPlayedLabels();
+        if (!mapBeingAdded) {
+            ItemSelectable is = e.getItemSelectable();
+            Tracking.setSelectedMap(selectedString(is));
+            Tracking.updateGamesPlayedLabels();
+        }
+    }
+
+    public static void setMapBeingAdded(boolean mapBeingAdded) {
+        MapDropdownHandler.mapBeingAdded = mapBeingAdded;
     }
 }

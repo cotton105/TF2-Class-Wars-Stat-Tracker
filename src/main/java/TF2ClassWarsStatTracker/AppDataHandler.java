@@ -1,6 +1,7 @@
 package TF2ClassWarsStatTracker;
 
 import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
+import TF2ClassWarsStatTracker.exceptions.MapAlreadyExistsException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.gui.tracking.Tracking;
@@ -10,6 +11,7 @@ import TF2ClassWarsStatTracker.util.Print;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AppDataHandler {
@@ -23,6 +25,23 @@ public class AppDataHandler {
             Print.error(ex.getMessage());
             FileHandler.initialiseJsonMapsFile();
         }
+    }
+
+    public static void addMap(String mapName) throws MapAlreadyExistsException {
+        if (!mapExists(mapName)) {
+            maps.add(new GameMap(mapName));
+            Collections.sort(maps);
+        } else {
+            Print.error(String.format("Map with name \"%s\" already exists", mapName));
+            throw new MapAlreadyExistsException(mapName);
+        }
+    }
+
+    private static boolean mapExists(String mapName) {
+        for (GameMap map : maps)
+            if (map.getMapName().equals(mapName))
+                return true;
+        return false;
     }
 
     public static List<GameModeGrid> getGameModeGrids(String mapName) throws GameMapNotFoundException {

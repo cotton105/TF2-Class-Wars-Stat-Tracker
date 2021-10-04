@@ -25,7 +25,6 @@ public class Tracking extends TrackingGUIJPanel {
     private static JPanel panMercenaryGrid;
     private static JButton butBluWin, butRedWin;
     private static JComboBox<String> mapDropdownSelect;
-    private static JTextField fieldNewMap;
 
     public Tracking() {
         super(new BorderLayout());
@@ -37,15 +36,9 @@ public class Tracking extends TrackingGUIJPanel {
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
 
-        List<GameMap> maps = AppDataHandler.getMaps();
-        ArrayList<String> mapNames = new ArrayList<>();
-        for (GameMap map : maps)
-            mapNames.add(map.getMapName());
         selectedMap = OVERALL_MAP;  // Set default to the overall scores
         mapDropdownSelect = new JComboBox<>();
-        mapDropdownSelect.addItem(OVERALL_MAP);
-        for (Object mapName : mapNames.toArray())
-            mapDropdownSelect.addItem(mapName.toString());
+        refreshMapList();
         mapDropdownSelect.addItemListener(new MapDropdownHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
@@ -149,11 +142,23 @@ public class Tracking extends TrackingGUIJPanel {
         panSelectedMapInfo.add(mapDropdownSelect);
         panSelectedMapInfo.add(butViewOverallMap);
 
-        // TODO: Add button to create a new map
-
         setDefaultFont(this, TF2secondary);
         reloadGrid();
         updateGamesPlayedLabels();
+    }
+
+    public static void refreshMapList() {
+        MapDropdownHandler.setMapBeingAdded(true);
+        mapDropdownSelect.removeAllItems();
+        List<GameMap> maps = AppDataHandler.getMaps();
+        ArrayList<String> mapNames = new ArrayList<>();
+        for (GameMap map : maps)
+            mapNames.add(map.getMapName());
+        mapDropdownSelect.addItem(OVERALL_MAP);
+        for (Object mapName : mapNames.toArray())
+            mapDropdownSelect.addItem(mapName.toString());
+        MapDropdownHandler.setMapBeingAdded(false);
+        mapDropdownSelect.setSelectedItem(selectedMap);
     }
 
     static void reloadGrid() {
@@ -249,7 +254,7 @@ public class Tracking extends TrackingGUIJPanel {
         mapDropdownSelect.setSelectedItem(OVERALL_MAP);
     }
 
-    static void setSelectedMap(String mapName) {
+    public static void setSelectedMap(String mapName) {
         selectedMap = mapName;
         reloadGrid();
     }
