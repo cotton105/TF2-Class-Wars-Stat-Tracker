@@ -178,7 +178,8 @@ public class Tracking extends TrackingGUIJPanel {
                 grid = AppDataHandler.getGameModeOverallGrid(selectedGameMode);
             }
             else {
-                setWinButtonAvailability(true);
+                if (selectedBluMercenary != -1 && selectedRedMercenary != -1)
+                    setWinButtonAvailability(true);
                 grid = AppDataHandler.getMap(selectedMap).getGameModeGrid(selectedGameMode);
             }
         } catch (GameMapNotFoundException ex) {
