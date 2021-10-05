@@ -15,11 +15,15 @@ public class Calculate {
     }
 
     public static Color getColourHighlight(Color colour, Color highlightColour) {
+        return getColourHighlight(colour, highlightColour, 0.1f);
+    }
+
+    public static Color getColourHighlight(Color colour, Color highlightColour, float weight) {
         int[] colourDifference = getColourDifference(colour, highlightColour);
         int[] weightedRGBArray = new int[3];
-        weightedRGBArray[0] = highlightColour.getRed() - (int)(0.9 * colourDifference[0]);
-        weightedRGBArray[1] = highlightColour.getGreen() - (int)(0.9 * colourDifference[1]);
-        weightedRGBArray[2] = highlightColour.getBlue() - (int)(0.9 * colourDifference[2]);
+        weightedRGBArray[0] = highlightColour.getRed() - (int)((1-weight) * colourDifference[0]);
+        weightedRGBArray[1] = highlightColour.getGreen() - (int)((1-weight) * colourDifference[1]);
+        weightedRGBArray[2] = highlightColour.getBlue() - (int)((1-weight) * colourDifference[2]);
         return new Color(weightedRGBArray[0], weightedRGBArray[1], weightedRGBArray[2]);
     }
 

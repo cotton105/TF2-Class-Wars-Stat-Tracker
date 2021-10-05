@@ -25,6 +25,6 @@ public class MainMenu extends TrackingGUIJPanel {
         add(butStats);
         add(butExit);
 
-        setDefaultFont(this, TF2secondary);
+        setDefaultFont(this, TF2secondary.deriveFont(20f));
     }
 }

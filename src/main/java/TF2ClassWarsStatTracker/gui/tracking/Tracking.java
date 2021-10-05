@@ -11,18 +11,20 @@ import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static TF2ClassWarsStatTracker.util.Constants.BLU_COLOUR;
-import static TF2ClassWarsStatTracker.util.Constants.RED_COLOUR;
+import static TF2ClassWarsStatTracker.util.Constants.*;
 
 public class Tracking extends TrackingGUIJPanel {
     public static final String OVERALL_MAP = "Overall scores";
     private static String selectedMap;
-    private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
-    private static JLabel labSelectedBluMercenary, labSelectedRedMercenary, labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
+    private static int selectedGameMode = -1;
+    private static final int[] selectedMercenary = new int[] {-1, -1};
+    private static JLabel labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
     private static JPanel panMercenaryGrid;
+    private static List<JPanel> mercenarySelectPanels;
     private static JButton butBluWin, butRedWin;
     private static JComboBox<String> mapDropdownSelect;
 
@@ -47,31 +49,38 @@ public class Tracking extends TrackingGUIJPanel {
         JPanel panBluHeader = new JPanel(new FlowLayout());
         JLabel labBlu = new JLabel("BLU");
         butBluWin = new JButton("WIN");
-        butBluWin.addActionListener(new RecordWinButtonHandler(Constants.BLU));
-        JPanel panBluClassSelect = new JPanel(new GridLayout(3,3));
+        butBluWin.addActionListener(new RecordWinButtonHandler(BLU));
+
+        mercenarySelectPanels = new ArrayList<>();
+        JPanel panBluMercenarySelect = new JPanel(new GridLayout(3,3));
+        mercenarySelectPanels.add(panBluMercenarySelect);
         for (int i=0; i<9; i++) {
             JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
-            butClassSelect.addActionListener(new ClassSelectButtonHandler(Constants.BLU, i));
-            panBluClassSelect.add(butClassSelect);
+            butClassSelect.addActionListener(new ClassSelectButtonHandler(BLU, i));
+            butClassSelect.setBackground(Color.WHITE);
+            butClassSelect.setPreferredSize(new Dimension(120, 40));
+            panBluMercenarySelect.add(butClassSelect);
         }
         JPanel panSelectedBluInfo = new JPanel(new GridLayout(2, 1));
-        labSelectedBluMercenary = new JLabel("Selected:");
-        labBluGamesWon = new JLabel();
+        labBluGamesWon = new JLabel("Won: N/A");
 
         JPanel panRed = new JPanel(new BorderLayout());
         JPanel panRedHeader = new JPanel(new FlowLayout());
         JLabel labRed = new JLabel("RED");
         butRedWin = new JButton("WIN");
         butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
-        JPanel panRedClassSelect = new JPanel(new GridLayout(3,3));
+
+        JPanel panRedMercenarySelect = new JPanel(new GridLayout(3,3));
+        mercenarySelectPanels.add(panRedMercenarySelect);
         for (int i=0; i<9; i++) {
             JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
             butClassSelect.addActionListener(new ClassSelectButtonHandler(Constants.RED, i));
-            panRedClassSelect.add(butClassSelect);
+            butClassSelect.setBackground(Color.WHITE);
+            butClassSelect.setPreferredSize(new Dimension(120, 40));
+            panRedMercenarySelect.add(butClassSelect);
         }
         JPanel panSelectedRedInfo = new JPanel(new GridLayout(2, 1));
-        labSelectedRedMercenary = new JLabel("Selected: ");
-        labRedGamesWon = new JLabel();
+        labRedGamesWon = new JLabel("Won: N/A");
 
         JButton butViewOverallMap = new JButton("View Overall");
         butViewOverallMap.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.OVERALL));
@@ -113,23 +122,21 @@ public class Tracking extends TrackingGUIJPanel {
         panBluVsRed.add(panRed, BorderLayout.SOUTH);
 
         panBlu.add(panBluHeader, BorderLayout.NORTH);
-        panBlu.add(panBluClassSelect, BorderLayout.CENTER);
+        panBlu.add(panBluMercenarySelect, BorderLayout.CENTER);
         panBlu.add(panSelectedBluInfo, BorderLayout.SOUTH);
 
         panBluHeader.add(labBlu);
         panBluHeader.add(butBluWin);
 
-        panSelectedBluInfo.add(labSelectedBluMercenary);
         panSelectedBluInfo.add(labBluGamesWon);
 
         panRed.add(panRedHeader, BorderLayout.NORTH);
-        panRed.add(panRedClassSelect, BorderLayout.CENTER);
+        panRed.add(panRedMercenarySelect, BorderLayout.CENTER);
         panRed.add(panSelectedRedInfo, BorderLayout.SOUTH);
 
         panRedHeader.add(labRed);
         panRedHeader.add(butRedWin);
 
-        panSelectedRedInfo.add(labSelectedRedMercenary);
         panSelectedRedInfo.add(labRedGamesWon);
 
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
@@ -142,7 +149,9 @@ public class Tracking extends TrackingGUIJPanel {
         panSelectedMapInfo.add(mapDropdownSelect);
         panSelectedMapInfo.add(butViewOverallMap);
 
-        setDefaultFont(this, TF2secondary);
+        setDefaultFont(this, TF2secondary.deriveFont(16f));
+        setDefaultFont(panSelectedBluInfo, TF2secondary.deriveFont(20f));
+        setDefaultFont(panSelectedRedInfo, TF2secondary.deriveFont(20f));
         refreshGrid();
         refreshGamesPlayedLabels();
     }
@@ -178,7 +187,7 @@ public class Tracking extends TrackingGUIJPanel {
                 grid = AppDataHandler.getGameModeOverallGrid(selectedGameMode);
             }
             else {
-                if (selectedBluMercenary != -1 && selectedRedMercenary != -1)
+                if (selectedMercenary[BLU] != -1 && selectedMercenary[Constants.RED] != -1)
                     setWinButtonAvailability(true);
                 grid = AppDataHandler.getMap(selectedMap).getGameModeGrid(selectedGameMode);
             }
@@ -201,6 +210,7 @@ public class Tracking extends TrackingGUIJPanel {
             for (int column=0; column<10; column++) {
                 Color borderColour = Color.BLACK;
                 JComponent gridElement;
+                float fontSize = 16f;
                 if (row == 0 && column > 0) {  // BLU mercenaries (first row)
                     gridElement = new JLabel(Constants.MERCENARY[column-1]);
                     gridElement.setBackground(BLU_COLOUR);
@@ -222,9 +232,10 @@ public class Tracking extends TrackingGUIJPanel {
                         buttonColour = Calculate.getColourScaledFromWhite(ratioBias, BLU_COLOUR, RED_COLOUR);
                     } else
                         buttonStr = "";
+                    fontSize = 20f;
                     gridElement = new JButton(buttonStr);
                     ((JButton)gridElement).addActionListener(new GridMercButtonSelectButtonHandler(column-1, row-1));
-                    if (column-1 == selectedBluMercenary && row-1 == selectedRedMercenary) {
+                    if (column-1 == selectedMercenary[BLU] && row-1 == selectedMercenary[RED]) {
                         borderColour = Color.YELLOW;
                         buttonColour = Calculate.getColourHighlight(buttonColour, Color.YELLOW);
                     }
@@ -233,28 +244,41 @@ public class Tracking extends TrackingGUIJPanel {
                 gridElement.setOpaque(true);
                 gridElement.setBorder(BorderFactory.createLineBorder(borderColour, 2));
                 gridElement.setPreferredSize(new Dimension(65, 65));
-                gridElement.setFont(TF2secondary);
+                gridElement.setFont(TF2secondary.deriveFont(fontSize));
                 panMercenaryGrid.add(gridElement);
             }
         }
     }
 
     static void setSelectedMercenary(int team, int mercenary) {
-        if (team == Constants.BLU) {
-            selectedBluMercenary = mercenary;
-            labSelectedBluMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
-        }
-        else if (team == Constants.RED) {
-            selectedRedMercenary = mercenary;
-            labSelectedRedMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
-        }
+        if (team == BLU)
+            selectedMercenary[BLU] = mercenary;
+        else if (team == RED)
+            selectedMercenary[RED] = mercenary;
+        refreshMercenarySelectGrid();
     }
 
     static void setSelectedMercenaries(int bluMercenary, int redMercenary) {
-        selectedBluMercenary = bluMercenary;
-        selectedRedMercenary = redMercenary;
-        labSelectedBluMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[bluMercenary]));
-        labSelectedRedMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[redMercenary]));
+        selectedMercenary[BLU] = bluMercenary;
+        selectedMercenary[RED] = redMercenary;
+        refreshMercenarySelectGrid();
+    }
+
+    private static void refreshMercenarySelectGrid() {
+        for (int panel=0; panel<mercenarySelectPanels.size(); panel++) {
+            int i = 0;
+            for (Component component : mercenarySelectPanels.get(panel).getComponents())
+                if (component instanceof JButton) {
+                    JButton but = (JButton)component;
+                    if (i != selectedMercenary[panel])
+                        but.setBackground(Color.WHITE);
+                    else if (panel == BLU)
+                        but.setBackground(Calculate.getColourHighlight(Color.WHITE, BLU_COLOUR, 0.5f));
+                    else
+                        but.setBackground(Calculate.getColourHighlight(Color.WHITE, RED_COLOUR, 0.5f));
+                    i++;
+                }
+        }
     }
 
     static void viewOverall() {
@@ -282,17 +306,17 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     static int getSelectedBluMercenary() {
-        return selectedBluMercenary;
+        return selectedMercenary[BLU];
     }
 
     static int getSelectedRedMercenary() {
-        return selectedRedMercenary;
+        return selectedMercenary[RED];
     }
 
     static void refreshGamesPlayedLabels() {
-        if (0 <= selectedBluMercenary && selectedBluMercenary < 9 && 0 <= selectedRedMercenary && selectedRedMercenary < 9) {
+        if (0 <= selectedMercenary[BLU] && selectedMercenary[BLU] < 9 && 0 <= selectedMercenary[RED] && selectedMercenary[RED] < 9) {
             try {
-                int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
+                int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedMercenary[BLU], selectedMercenary[RED]);
                 String bluGamesWonText = String.format("Won: %d", totalWins[0]);
                 String redGamesWonText = String.format("Won: %d", totalWins[1]);
                 labBluGamesWon.setText(bluGamesWonText);
@@ -313,5 +337,6 @@ public class Tracking extends TrackingGUIJPanel {
         refreshGrid();
         refreshMapList();
         refreshGamesPlayedLabels();
+        refreshMercenarySelectGrid();
     }
 }
