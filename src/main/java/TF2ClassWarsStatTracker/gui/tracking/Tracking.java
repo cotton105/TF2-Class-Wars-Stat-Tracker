@@ -1,7 +1,7 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
 import TF2ClassWarsStatTracker.AppDataHandler;
-import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
+import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.gui.TrackingGUIJPanel;
@@ -21,7 +21,7 @@ public class Tracking extends TrackingGUIJPanel {
     public static final String OVERALL_MAP = "Overall scores";
     private static String selectedMap;
     private static int selectedGameMode = -1, selectedBluMercenary = -1, selectedRedMercenary = -1;
-    private static JLabel labSelectedBluMerc, labSelectedRedMerc, labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
+    private static JLabel labSelectedBluMercenary, labSelectedRedMercenary, labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
     private static JPanel panMercenaryGrid;
     private static JButton butBluWin, butRedWin;
     private static JComboBox<String> mapDropdownSelect;
@@ -55,7 +55,7 @@ public class Tracking extends TrackingGUIJPanel {
             panBluClassSelect.add(butClassSelect);
         }
         JPanel panSelectedBluInfo = new JPanel(new GridLayout(2, 1));
-        labSelectedBluMerc = new JLabel("Selected:");
+        labSelectedBluMercenary = new JLabel("Selected:");
         labBluGamesWon = new JLabel();
 
         JPanel panRed = new JPanel(new BorderLayout());
@@ -70,7 +70,7 @@ public class Tracking extends TrackingGUIJPanel {
             panRedClassSelect.add(butClassSelect);
         }
         JPanel panSelectedRedInfo = new JPanel(new GridLayout(2, 1));
-        labSelectedRedMerc = new JLabel("Selected: ");
+        labSelectedRedMercenary = new JLabel("Selected: ");
         labRedGamesWon = new JLabel();
 
         JButton butViewOverallMap = new JButton("View Overall");
@@ -119,7 +119,7 @@ public class Tracking extends TrackingGUIJPanel {
         panBluHeader.add(labBlu);
         panBluHeader.add(butBluWin);
 
-        panSelectedBluInfo.add(labSelectedBluMerc);
+        panSelectedBluInfo.add(labSelectedBluMercenary);
         panSelectedBluInfo.add(labBluGamesWon);
 
         panRed.add(panRedHeader, BorderLayout.NORTH);
@@ -129,7 +129,7 @@ public class Tracking extends TrackingGUIJPanel {
         panRedHeader.add(labRed);
         panRedHeader.add(butRedWin);
 
-        panSelectedRedInfo.add(labSelectedRedMerc);
+        panSelectedRedInfo.add(labSelectedRedMercenary);
         panSelectedRedInfo.add(labRedGamesWon);
 
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
@@ -143,8 +143,8 @@ public class Tracking extends TrackingGUIJPanel {
         panSelectedMapInfo.add(butViewOverallMap);
 
         setDefaultFont(this, TF2secondary);
-        reloadGrid();
-        updateGamesPlayedLabels();
+        refreshGrid();
+        refreshGamesPlayedLabels();
     }
 
     public static void refreshMapList() {
@@ -161,7 +161,7 @@ public class Tracking extends TrackingGUIJPanel {
         mapDropdownSelect.setSelectedItem(selectedMap);
     }
 
-    static void reloadGrid() {
+    static void refreshGrid() {
         panMercenaryGrid.removeAll();
         GameModeGrid grid;
         try {
@@ -182,7 +182,7 @@ public class Tracking extends TrackingGUIJPanel {
                     setWinButtonAvailability(true);
                 grid = AppDataHandler.getMap(selectedMap).getGameModeGrid(selectedGameMode);
             }
-        } catch (GameMapNotFoundException ex) {
+        } catch (MapNotFoundException ex) {
             Print.error(ex.getMessage());
             ex.printStackTrace();
             grid = GameModeGrid.getEmptyGrid();
@@ -242,12 +242,19 @@ public class Tracking extends TrackingGUIJPanel {
     static void setSelectedMercenary(int team, int mercenary) {
         if (team == Constants.BLU) {
             selectedBluMercenary = mercenary;
-            labSelectedBluMerc.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
+            labSelectedBluMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
         }
         else if (team == Constants.RED) {
             selectedRedMercenary = mercenary;
-            labSelectedRedMerc.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
+            labSelectedRedMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[mercenary]));
         }
+    }
+
+    static void setSelectedMercenaries(int bluMercenary, int redMercenary) {
+        selectedBluMercenary = bluMercenary;
+        selectedRedMercenary = redMercenary;
+        labSelectedBluMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[bluMercenary]));
+        labSelectedRedMercenary.setText(String.format("Selected: %s", Constants.MERCENARY[redMercenary]));
     }
 
     static void viewOverall() {
@@ -257,7 +264,7 @@ public class Tracking extends TrackingGUIJPanel {
 
     public static void setSelectedMap(String mapName) {
         selectedMap = mapName;
-        reloadGrid();
+        refreshGrid();
     }
 
     static String getSelectedMap() {
@@ -266,7 +273,8 @@ public class Tracking extends TrackingGUIJPanel {
 
     static void setSelectedGameMode(int gameMode) {
         selectedGameMode = gameMode;
-        reloadGrid();
+        refreshGrid();
+        refreshGamesPlayedLabels();
     }
 
     static int getSelectedGameMode() {
@@ -281,7 +289,7 @@ public class Tracking extends TrackingGUIJPanel {
         return selectedRedMercenary;
     }
 
-    static void updateGamesPlayedLabels() {
+    static void refreshGamesPlayedLabels() {
         if (0 <= selectedBluMercenary && selectedBluMercenary < 9 && 0 <= selectedRedMercenary && selectedRedMercenary < 9) {
             try {
                 int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedBluMercenary, selectedRedMercenary);
@@ -289,15 +297,21 @@ public class Tracking extends TrackingGUIJPanel {
                 String redGamesWonText = String.format("Won: %d", totalWins[1]);
                 labBluGamesWon.setText(bluGamesWonText);
                 labRedGamesWon.setText(redGamesWonText);
-            } catch (GameMapNotFoundException ex) {
+            } catch (MapNotFoundException ex) {
                 ex.printStackTrace();
             }
         }
         try {
             int totalGames = AppDataHandler.getTotalGames(selectedMap, selectedGameMode);
             labGamesPlayedTotal.setText(String.format("Total games recorded in this configuration: %d", totalGames));
-        } catch (GameMapNotFoundException ex) {
+        } catch (MapNotFoundException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static void refreshAll() {
+        refreshGrid();
+        refreshMapList();
+        refreshGamesPlayedLabels();
     }
 }

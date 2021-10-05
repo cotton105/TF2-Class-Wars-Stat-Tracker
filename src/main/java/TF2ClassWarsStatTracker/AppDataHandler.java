@@ -1,6 +1,7 @@
 package TF2ClassWarsStatTracker;
 
-import TF2ClassWarsStatTracker.exceptions.GameMapNotFoundException;
+import TF2ClassWarsStatTracker.exceptions.ActionHistoryEmptyException;
+import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
 import TF2ClassWarsStatTracker.exceptions.MapAlreadyExistsException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
@@ -15,12 +16,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class AppDataHandler {
-    public static final List<GameMap> maps = new ArrayList<>();
+    public static final String NEW_MAP = "newmap", RECORD_WIN = "recordwin";
+    public static final List<GameMap> MAPS;
+    private static final List<String> ACTION_HISTORY;
+    private static final int ACTION_HISTORY_MAX_LENGTH = 10;
 
     static {
+        MAPS = new ArrayList<>();
+        ACTION_HISTORY = new ArrayList<>();
         try {
             List<GameMap> maps = JSONHandler.gameMapsFromJSON();
-            AppDataHandler.maps.addAll(maps);
+            AppDataHandler.MAPS.addAll(maps);
         } catch (FileNotFoundException ex) {
             Print.error(ex.getMessage());
             FileHandler.initialiseJsonMapsFile();
@@ -29,26 +35,35 @@ public class AppDataHandler {
 
     public static void addMap(String mapName) throws MapAlreadyExistsException {
         if (!mapExists(mapName)) {
-            maps.add(new GameMap(mapName));
-            Collections.sort(maps);
+            MAPS.add(new GameMap(mapName));
+            Collections.sort(MAPS);
         } else {
             Print.error(String.format("Map with name \"%s\" already exists", mapName));
             throw new MapAlreadyExistsException(mapName);
         }
     }
 
+    public static void removeMap(String mapName) throws MapNotFoundException {
+        if (mapExists(mapName)) {
+            MAPS.remove(getMap(mapName));
+        } else {
+            Print.formatError("Map with name \"%s\" does not exist", mapName);
+            throw new MapNotFoundException(mapName);
+        }
+    }
+
     private static boolean mapExists(String mapName) {
-        for (GameMap map : maps)
+        for (GameMap map : MAPS)
             if (map.getMapName().equals(mapName))
                 return true;
         return false;
     }
 
-    public static List<GameModeGrid> getGameModeGrids(String mapName) throws GameMapNotFoundException {
+    public static List<GameModeGrid> getGameModeGrids(String mapName) throws MapNotFoundException {
         return getMap(mapName).getGameModeGrids();
     }
 
-    public static int getTotalGames(String mapName, int gameMode) throws GameMapNotFoundException {
+    public static int getTotalGames(String mapName, int gameMode) throws MapNotFoundException {
         int games = 0;
         if (mapName.equals(Tracking.OVERALL_MAP) && gameMode == -1)
             for (GameMap map : getMaps())
@@ -77,23 +92,27 @@ public class AppDataHandler {
         return games;
     }
 
-    public static GameMap getMap(String mapName) throws GameMapNotFoundException {
-        for (GameMap map : maps) {
+    public static GameMap getMap(String mapName) throws MapNotFoundException {
+        for (GameMap map : MAPS) {
             if (map.getMapName().equals(mapName))
                 return map;
         }
-        throw new GameMapNotFoundException(mapName);
+        throw new MapNotFoundException(mapName);
     }
 
     public static List<GameMap> getMaps() {
-        return maps;
+        return MAPS;
     }
 
-    public static void incrementWins(String mapName, int gameMode, int bluMercenary, int redMercenary, int team) throws GameMapNotFoundException, IndexOutOfBoundsException {
-        getMap(mapName).incrementWins(gameMode, team, bluMercenary, redMercenary);
+    public static void incrementWins(String mapName, int gameMode, int bluMercenary, int redMercenary, int team) throws MapNotFoundException, IndexOutOfBoundsException {
+        getMap(mapName).incrementWins(gameMode, bluMercenary, redMercenary, team);
     }
 
-    public static int[] getMatchupWins(String mapName, int gameMode, int bluMercenary, int redMercenary) throws GameMapNotFoundException {
+    private static void decrementWins(String mapName, int gameMode, int bluMercenary, int redMercenary, int team) throws MapNotFoundException {
+        getMap(mapName).decrementWins(gameMode, bluMercenary, redMercenary, team);
+    }
+
+    public static int[] getMatchupWins(String mapName, int gameMode, int bluMercenary, int redMercenary) throws MapNotFoundException {
         int[] wins = new int[2];
         if (mapName.equals(Tracking.OVERALL_MAP) && gameMode == -1)
             for (GameMap map : getMaps())
@@ -129,7 +148,7 @@ public class AppDataHandler {
         return new GameModeGrid(mercenaryWins);
     }
 
-    public static GameModeGrid getOverallGrid(String mapName) throws GameMapNotFoundException {
+    public static GameModeGrid getOverallGrid(String mapName) throws MapNotFoundException {
         int[][][] mercenaryWins = new int[9][9][2];
         GameMap map = getMap(mapName);
         for (GameModeGrid grid : map.getGameModeGrids())
@@ -151,5 +170,42 @@ public class AppDataHandler {
             for (int j=0; j<existingGrid[0].length; j++)
                 for (int k=0; k<existingGrid[0][0].length; k++)
                     subjectGrid[i][j][k] += existingGrid[i][j][k];
+    }
+
+    public static void updateActionHistory(String action) {
+        ACTION_HISTORY.add(action);
+        if (ACTION_HISTORY.size() > ACTION_HISTORY_MAX_LENGTH)
+            ACTION_HISTORY.remove(0);
+    }
+
+    public static void undoLastAction() throws MapNotFoundException, ActionHistoryEmptyException {
+        if (!ACTION_HISTORY.isEmpty()) {
+            String lastAction = getLastAction();
+            String[] lastActionSplit = lastAction.split("-");
+            switch (lastActionSplit[0]) {
+                case NEW_MAP -> {
+                    String mapName = lastActionSplit[1];
+                    removeMap(mapName);
+                }
+                case AppDataHandler.RECORD_WIN -> {
+                    String mapName = lastActionSplit[1];
+                    int gameMode = Integer.parseInt(lastActionSplit[2]);
+                    int bluMercenary = Integer.parseInt(lastActionSplit[3]);
+                    int redMercenary = Integer.parseInt(lastActionSplit[4]);
+                    int team = Integer.parseInt(lastActionSplit[5]);
+                    decrementWins(mapName, gameMode, bluMercenary, redMercenary, team);
+                }
+            }
+            removeLastAction();
+        } else
+            throw new ActionHistoryEmptyException("No actions to undo");
+    }
+
+    private static void removeLastAction() {
+        ACTION_HISTORY.remove(ACTION_HISTORY.size()-1);
+    }
+
+    private static String getLastAction() {
+        return ACTION_HISTORY.get(ACTION_HISTORY.size()-1);
     }
 }

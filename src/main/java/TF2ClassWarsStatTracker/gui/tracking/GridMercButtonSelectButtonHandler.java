@@ -15,9 +15,8 @@ public class GridMercButtonSelectButtonHandler implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tracking.setSelectedMercenary(Constants.BLU, blu);
-        Tracking.setSelectedMercenary(Constants.RED, red);
-        Tracking.updateGamesPlayedLabels();
-        Tracking.reloadGrid();
+        Tracking.setSelectedMercenaries(blu, red);
+        Tracking.refreshGamesPlayedLabels();
+        Tracking.refreshGrid();
     }
 }

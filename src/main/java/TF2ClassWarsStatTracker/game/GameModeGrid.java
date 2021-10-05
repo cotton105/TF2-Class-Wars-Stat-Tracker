@@ -24,6 +24,10 @@ public class GameModeGrid {
         mercenaryWins[bluMercenary][redMercenary][team]++;
     }
 
+    public void decrementMercenaryWins(int team, int bluMercenary, int redMercenary) {
+        mercenaryWins[bluMercenary][redMercenary][team]--;
+    }
+
     public int[][][] getMatchupWins() {
         return mercenaryWins;
     }

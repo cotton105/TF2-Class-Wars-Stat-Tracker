@@ -37,6 +37,10 @@ public class Start {
         JMenuItem menuFileExit = new JMenuItem("Exit");
         menuFileExit.addActionListener(new MenuItemHandler(MenuItemHandler.EXIT));
 
+        JMenu menuEdit = new JMenu("Edit");
+        JMenuItem menuEditUndo = new JMenuItem("Undo");
+        menuEditUndo.addActionListener(new MenuItemHandler(MenuItemHandler.UNDO));
+
         JMenu menuMaps = new JMenu("Maps");
         JMenuItem menuMapsNew = new JMenuItem("New map");
         menuMapsNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_MAP));
@@ -44,7 +48,10 @@ public class Start {
         menuMapsImport.addActionListener(new MenuItemHandler(MenuItemHandler.IMPORT_MAPS_DATA));
 
         menuBar.add(menuFile);
+        menuBar.add(menuEdit);
         menuBar.add(menuMaps);
+
+        menuEdit.add(menuEditUndo);
 
         menuFile.add(menuFileOptions);
         menuFile.add(menuFileExit);

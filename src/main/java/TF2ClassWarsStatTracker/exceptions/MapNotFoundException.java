@@ -1,12 +1,12 @@
 package TF2ClassWarsStatTracker.exceptions;
 
-public class GameMapNotFoundException extends Exception {
+public class MapNotFoundException extends Exception {
 
-    public GameMapNotFoundException() {
+    public MapNotFoundException() {
         super();
     }
 
-    public GameMapNotFoundException(String mapName) {
+    public MapNotFoundException(String mapName) {
         super(String.format("Map with name \"%s\" was not found", mapName));
     }
 }

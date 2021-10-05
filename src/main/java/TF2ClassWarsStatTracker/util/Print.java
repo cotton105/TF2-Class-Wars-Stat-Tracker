@@ -25,15 +25,19 @@ public class Print {
 
     /**
      * Print a string with a timestamp prepended.
-     * @param str message to output.
+     * @param msg message to output.
      */
-    private static void timestamp(String str) {
+    private static void timestamp(String msg) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        System.out.printf("[%s] %s\n", timeFormat.format(timestamp), str);
+        System.out.printf("[%s] %s\n", timeFormat.format(timestamp), msg);
     }
 
-    public static void error(String str) {
-        timestamp(String.format("ERR: %s", str));
+    public static void error(String msg) {
+        timestamp(String.format("ERR: %s", msg));
+    }
+
+    public static void formatError(String msg, Object ... args) {
+        error(String.format(msg, args));
     }
 
     public static void commaSeparated(ArrayList<String> strs, boolean timestamp) {

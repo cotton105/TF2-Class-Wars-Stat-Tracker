@@ -38,8 +38,12 @@ public class GameMap implements Comparable<GameMap> {
         return mapName;
     }
 
-    public void incrementWins(int gameMode, int team, int bluMercenary, int redMercenary) throws IndexOutOfBoundsException {
+    public void incrementWins(int gameMode, int bluMercenary, int redMercenary, int team) throws IndexOutOfBoundsException {
         gameModeGrids.get(gameMode).incrementMercenaryWins(team, bluMercenary, redMercenary);
+    }
+
+    public void decrementWins(int gameMode, int bluMercenary, int redMercenary, int team) throws IndexOutOfBoundsException {
+        gameModeGrids.get(gameMode).decrementMercenaryWins(team, bluMercenary, redMercenary);
     }
 
     public void setWins(int gameMode, int bluMercenary, int redMercenary, int[] wins) {
