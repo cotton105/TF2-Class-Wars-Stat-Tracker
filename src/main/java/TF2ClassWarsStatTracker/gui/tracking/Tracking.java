@@ -2,7 +2,6 @@ package TF2ClassWarsStatTracker.gui.tracking;
 
 import TF2ClassWarsStatTracker.AppDataHandler;
 import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
-import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.gui.TrackingGUIJPanel;
 import TF2ClassWarsStatTracker.util.Calculate;
@@ -11,7 +10,6 @@ import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +39,7 @@ public class Tracking extends TrackingGUIJPanel {
         selectedMap = OVERALL_MAP;  // Set default to the overall scores
         mapDropdownSelect = new JComboBox<>();
         refreshMapList();
-        mapDropdownSelect.addItemListener(new MapDropdownHandler());
+        mapDropdownSelect.addItemListener(new MapDropdownSelectHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
@@ -157,16 +155,13 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     public static void refreshMapList() {
-        MapDropdownHandler.setMapBeingAdded(true);
+        MapDropdownSelectHandler.setMapBeingAdded(true);
         mapDropdownSelect.removeAllItems();
-        List<GameMap> maps = AppDataHandler.getMaps();
-        ArrayList<String> mapNames = new ArrayList<>();
-        for (GameMap map : maps)
-            mapNames.add(map.getMapName());
+        List<String> mapNames = AppDataHandler.getMapNames();
         mapDropdownSelect.addItem(OVERALL_MAP);
         for (Object mapName : mapNames.toArray())
             mapDropdownSelect.addItem(mapName.toString());
-        MapDropdownHandler.setMapBeingAdded(false);
+        MapDropdownSelectHandler.setMapBeingAdded(false);
         mapDropdownSelect.setSelectedItem(selectedMap);
     }
 

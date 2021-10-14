@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap implements Comparable<GameMap> {
-    private final String mapName;
     private final List<GameModeGrid> gameModeGrids;
+    private String mapName;
 
     public GameMap(String mapName) {
         this.mapName = mapName;
@@ -36,6 +36,10 @@ public class GameMap implements Comparable<GameMap> {
 
     public String getMapName() {
         return mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
     }
 
     public void incrementWins(int gameMode, int bluMercenary, int redMercenary, int team) throws IndexOutOfBoundsException {

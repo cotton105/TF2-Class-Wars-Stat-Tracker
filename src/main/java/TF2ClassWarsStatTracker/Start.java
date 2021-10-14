@@ -44,6 +44,8 @@ public class Start {
         JMenu menuMaps = new JMenu("Maps");
         JMenuItem menuMapsNew = new JMenuItem("New map");
         menuMapsNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_MAP));
+        JMenuItem menuMapsRename = new JMenuItem("Rename map");
+        menuMapsRename.addActionListener(new MenuItemHandler(MenuItemHandler.RENAME_MAP));
         JMenuItem menuMapsImport = new JMenuItem("Import maps data");
         menuMapsImport.addActionListener(new MenuItemHandler(MenuItemHandler.IMPORT_MAPS_DATA));
 
@@ -57,6 +59,7 @@ public class Start {
         menuFile.add(menuFileExit);
 
         menuMaps.add(menuMapsNew);
+        menuMaps.add(menuMapsRename);
         menuMaps.add(menuMapsImport);
 
         frame.setJMenuBar(menuBar);

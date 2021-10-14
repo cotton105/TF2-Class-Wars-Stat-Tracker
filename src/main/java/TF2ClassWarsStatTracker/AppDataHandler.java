@@ -1,10 +1,7 @@
 package TF2ClassWarsStatTracker;
 
-import TF2ClassWarsStatTracker.exceptions.ActionHistoryEmptyException;
-import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
-import TF2ClassWarsStatTracker.exceptions.MapAlreadyExistsException;
-import TF2ClassWarsStatTracker.game.GameMap;
-import TF2ClassWarsStatTracker.game.GameModeGrid;
+import TF2ClassWarsStatTracker.exceptions.*;
+import TF2ClassWarsStatTracker.game.*;
 import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.FileHandler;
 import TF2ClassWarsStatTracker.util.JSONHandler;
@@ -50,6 +47,15 @@ public class AppDataHandler {
             Print.formatError("Map with name \"%s\" does not exist", mapName);
             throw new MapNotFoundException(mapName);
         }
+    }
+
+    public static void renameMap(String oldName, String newName) throws MapNotFoundException, InvalidMapNameException {
+        if (GameMap.validMapName(newName)) {
+            getMap(oldName).setMapName(newName);
+            Collections.sort(MAPS);
+        }
+        else
+            throw new InvalidMapNameException(newName);
     }
 
     private static boolean mapExists(String mapName) {
@@ -102,6 +108,13 @@ public class AppDataHandler {
 
     public static List<GameMap> getMaps() {
         return MAPS;
+    }
+
+    public static List<String> getMapNames() {
+        List<String> mapNames = new ArrayList<>();
+        for (GameMap map : MAPS)
+            mapNames.add(map.getMapName());
+        return mapNames;
     }
 
     public static void incrementWins(String mapName, int gameMode, int bluMercenary, int redMercenary, int team) throws MapNotFoundException, IndexOutOfBoundsException {

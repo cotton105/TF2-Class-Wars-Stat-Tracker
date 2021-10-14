@@ -4,16 +4,11 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class MapDropdownHandler implements ItemListener {
+public class MapDropdownSelectHandler implements ItemListener {
     private static boolean mapBeingAdded;
 
-    MapDropdownHandler() {
+    MapDropdownSelectHandler() {
         mapBeingAdded = false;
-    }
-
-    static private String selectedString(ItemSelectable is) {
-        Object[] selected = is.getSelectedObjects();
-        return ((selected.length == 0) ? "null" : (String) selected[0]);
     }
 
     @Override
@@ -25,7 +20,12 @@ public class MapDropdownHandler implements ItemListener {
         }
     }
 
+    static private String selectedString(ItemSelectable is) {
+        Object[] selected = is.getSelectedObjects();
+        return ((selected.length == 0) ? "null" : (String) selected[0]);
+    }
+
     public static void setMapBeingAdded(boolean mapBeingAdded) {
-        MapDropdownHandler.mapBeingAdded = mapBeingAdded;
+        MapDropdownSelectHandler.mapBeingAdded = mapBeingAdded;
     }
 }
