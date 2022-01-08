@@ -1,6 +1,7 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
 import TF2ClassWarsStatTracker.AppDataHandler;
+import TF2ClassWarsStatTracker.ServerDataRetrieval;
 import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 import TF2ClassWarsStatTracker.gui.TrackingGUIJPanel;
@@ -9,21 +10,28 @@ import TF2ClassWarsStatTracker.util.Constants;
 import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import static TF2ClassWarsStatTracker.util.Constants.*;
 
 public class Tracking extends TrackingGUIJPanel {
     public static final String OVERALL_MAP = "Overall scores";
-    private static String selectedMap;
-    private static int selectedGameMode = -1;
     private static final int[] selectedMercenary = new int[] {-1, -1};
-    private static JLabel labGamesPlayedTotal, labBluGamesWon, labRedGamesWon;
+    private static final int SERVER_BANNER_WIDTH = 263;
+    private static final JLabel[] labGamesWon = new JLabel[2];
+    private static final JPanel[]
+            panSelectedTeamInfo = new JPanel[2],
+            mercenarySelectPanels = new JPanel[2];
+    private static final JButton[] butWin = new JButton[2];
+    private static String selectedServer, selectedMap;
+    private static int selectedGameMode = -1;
+    private static JLabel labGamesPlayedTotal;
+    private static JEditorPane panServerBannerHTML;
     private static JPanel panMercenaryGrid;
-    private static List<JPanel> mercenarySelectPanels;
-    private static JButton butBluWin, butRedWin;
     private static JComboBox<String> mapDropdownSelect;
 
     public Tracking() {
@@ -42,43 +50,6 @@ public class Tracking extends TrackingGUIJPanel {
         mapDropdownSelect.addItemListener(new MapDropdownSelectHandler());
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
-
-        JPanel panBlu = new JPanel(new BorderLayout());
-        JPanel panBluHeader = new JPanel(new FlowLayout());
-        JLabel labBlu = new JLabel("BLU");
-        butBluWin = new JButton("WIN");
-        butBluWin.addActionListener(new RecordWinButtonHandler(BLU));
-
-        mercenarySelectPanels = new ArrayList<>();
-        JPanel panBluMercenarySelect = new JPanel(new GridLayout(3,3));
-        mercenarySelectPanels.add(panBluMercenarySelect);
-        for (int i=0; i<9; i++) {
-            JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
-            butClassSelect.addActionListener(new ClassSelectButtonHandler(BLU, i));
-            butClassSelect.setBackground(Color.WHITE);
-            butClassSelect.setPreferredSize(new Dimension(120, 40));
-            panBluMercenarySelect.add(butClassSelect);
-        }
-        JPanel panSelectedBluInfo = new JPanel(new GridLayout(2, 1));
-        labBluGamesWon = new JLabel("Won: N/A");
-
-        JPanel panRed = new JPanel(new BorderLayout());
-        JPanel panRedHeader = new JPanel(new FlowLayout());
-        JLabel labRed = new JLabel("RED");
-        butRedWin = new JButton("WIN");
-        butRedWin.addActionListener(new RecordWinButtonHandler(Constants.RED));
-
-        JPanel panRedMercenarySelect = new JPanel(new GridLayout(3,3));
-        mercenarySelectPanels.add(panRedMercenarySelect);
-        for (int i=0; i<9; i++) {
-            JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
-            butClassSelect.addActionListener(new ClassSelectButtonHandler(Constants.RED, i));
-            butClassSelect.setBackground(Color.WHITE);
-            butClassSelect.setPreferredSize(new Dimension(120, 40));
-            panRedMercenarySelect.add(butClassSelect);
-        }
-        JPanel panSelectedRedInfo = new JPanel(new GridLayout(2, 1));
-        labRedGamesWon = new JLabel("Won: N/A");
 
         JButton butViewOverallMap = new JButton("View Overall");
         butViewOverallMap.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.OVERALL));
@@ -104,8 +75,6 @@ public class Tracking extends TrackingGUIJPanel {
         setBorder(BorderFactory.createEmptyBorder(0,20,20,20));
         panLeft.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panRight.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panBlu.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
-        panRed.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 
         // JComponent parent-child structure
         add(panMenuBar, BorderLayout.NORTH);
@@ -114,28 +83,11 @@ public class Tracking extends TrackingGUIJPanel {
 
         panMenuBar.add(butBack);
 
+        panLeft.add(gameTrackerServerBanner(), BorderLayout.CENTER);
         panLeft.add(panBluVsRed, BorderLayout.SOUTH);
 
-        panBluVsRed.add(panBlu, BorderLayout.NORTH);
-        panBluVsRed.add(panRed, BorderLayout.SOUTH);
-
-        panBlu.add(panBluHeader, BorderLayout.NORTH);
-        panBlu.add(panBluMercenarySelect, BorderLayout.CENTER);
-        panBlu.add(panSelectedBluInfo, BorderLayout.SOUTH);
-
-        panBluHeader.add(labBlu);
-        panBluHeader.add(butBluWin);
-
-        panSelectedBluInfo.add(labBluGamesWon);
-
-        panRed.add(panRedHeader, BorderLayout.NORTH);
-        panRed.add(panRedMercenarySelect, BorderLayout.CENTER);
-        panRed.add(panSelectedRedInfo, BorderLayout.SOUTH);
-
-        panRedHeader.add(labRed);
-        panRedHeader.add(butRedWin);
-
-        panSelectedRedInfo.add(labRedGamesWon);
+        panBluVsRed.add(classSelectGrid(BLU), BorderLayout.NORTH);
+        panBluVsRed.add(classSelectGrid(RED), BorderLayout.SOUTH);
 
         panRight.add(panSelectedGameInfo, BorderLayout.NORTH);
         panRight.add(panMercenaryGrid, BorderLayout.CENTER);
@@ -147,11 +99,77 @@ public class Tracking extends TrackingGUIJPanel {
         panSelectedMapInfo.add(mapDropdownSelect);
         panSelectedMapInfo.add(butViewOverallMap);
 
+        // Set fonts
         setDefaultFont(this, TF2secondary.deriveFont(16f));
-        setDefaultFont(panSelectedBluInfo, TF2secondary.deriveFont(20f));
-        setDefaultFont(panSelectedRedInfo, TF2secondary.deriveFont(20f));
+        for (JPanel pan : panSelectedTeamInfo)
+            setDefaultFont(pan, TF2secondary.deriveFont(20f));
+
         refreshGrid();
         refreshGamesPlayedLabels();
+    }
+
+    private JComponent gameTrackerServerBanner() {
+        // TODO: Fix inconsistent panel size for the server banner (sometimes window is small and others it's bigger)
+        panServerBannerHTML = new JEditorPane();
+        panServerBannerHTML.setEditable(false);
+        panServerBannerHTML.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+        panServerBannerHTML.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    Desktop.getDesktop().browse(e.getURL().toURI());
+                } catch (IOException | URISyntaxException malformedURLException) {
+                    malformedURLException.printStackTrace();
+                }
+            }
+        });
+        JScrollPane panServerBannerHTMLScroll = new JScrollPane();
+        try {
+            panServerBannerHTML.setPage(ServerDataRetrieval.getGameTrackerServerBannerIframe(ServerDataRetrieval.SERVER_IP, ServerDataRetrieval.PORT, SERVER_BANNER_WIDTH));
+            panServerBannerHTMLScroll = new JScrollPane(panServerBannerHTML);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return panServerBannerHTMLScroll;
+    }
+
+    private JComponent classSelectGrid(int team) {
+        if (team < 0 || 1 < team )
+            throw new IllegalArgumentException("Team must be 0 or 1 (BLU/RED)");
+        JPanel panTeam = new JPanel(new BorderLayout());
+        JPanel panTeamHeader = new JPanel(new FlowLayout());
+        JLabel labTeam = new JLabel(TEAM[team]);
+
+        butWin[team] = new JButton("WIN");
+        butWin[team].addActionListener(new RecordWinButtonHandler(team));
+
+        JPanel panMercenarySelect = new JPanel(new GridLayout(3,3));
+        mercenarySelectPanels[team] = panMercenarySelect;
+        for (int i=0; i<9; i++) {
+            JButton butClassSelect = new JButton(Constants.MERCENARY[i]);
+            butClassSelect.addActionListener(new ClassSelectButtonHandler(team, i));
+            butClassSelect.setBackground(Color.WHITE);
+            butClassSelect.setPreferredSize(new Dimension(120, 40));
+            panMercenarySelect.add(butClassSelect);
+        }
+        panSelectedTeamInfo[team] = new JPanel(new GridLayout(2, 1));
+        labGamesWon[team] = new JLabel("Won: N/A");
+
+        panSelectedTeamInfo[team].add(labGamesWon[team]);
+
+        if (team == BLU)
+            panTeam.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+        else
+            panTeam.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+
+        panTeam.add(panTeamHeader, BorderLayout.NORTH);
+        panTeam.add(panMercenarySelect, BorderLayout.CENTER);
+        panTeam.add(panSelectedTeamInfo[team], BorderLayout.SOUTH);
+
+        panTeamHeader.add(labTeam);
+        panTeamHeader.add(butWin[team]);
+
+        panSelectedTeamInfo[team].add(labGamesWon[team]);
+        return panTeam;
     }
 
     public static void refreshMapList() {
@@ -196,8 +214,8 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     private static void setWinButtonAvailability(boolean available) {
-        butBluWin.setEnabled(available);
-        butRedWin.setEnabled(available);
+        for (JButton but : butWin)
+            but.setEnabled(available);
     }
 
     private static void fillGrid(GameModeGrid grid) {
@@ -260,9 +278,9 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     private static void refreshMercenarySelectGrid() {
-        for (int panel=0; panel<mercenarySelectPanels.size(); panel++) {
+        for (int panel=0; panel<mercenarySelectPanels.length; panel++) {
             int i = 0;
-            for (Component component : mercenarySelectPanels.get(panel).getComponents())
+            for (Component component : mercenarySelectPanels[panel].getComponents())
                 if (component instanceof JButton) {
                     JButton but = (JButton)component;
                     if (i != selectedMercenary[panel])
@@ -312,10 +330,10 @@ public class Tracking extends TrackingGUIJPanel {
         if (0 <= selectedMercenary[BLU] && selectedMercenary[BLU] < 9 && 0 <= selectedMercenary[RED] && selectedMercenary[RED] < 9) {
             try {
                 int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedMercenary[BLU], selectedMercenary[RED]);
-                String bluGamesWonText = String.format("Won: %d", totalWins[0]);
-                String redGamesWonText = String.format("Won: %d", totalWins[1]);
-                labBluGamesWon.setText(bluGamesWonText);
-                labRedGamesWon.setText(redGamesWonText);
+                for (int i = 0; i < labGamesWon.length; i++) {
+                    String gamesWonText = String.format("Won: %d", totalWins[i]);
+                    labGamesWon[i].setText(gamesWonText);
+                }
             } catch (MapNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -328,10 +346,23 @@ public class Tracking extends TrackingGUIJPanel {
         }
     }
 
+    // TODO: Make this function work properly, the server info needs to be reliably refreshed
+    private static void refreshServerBanner() {
+        try {
+            panServerBannerHTML.setPage("127.0.0.1");
+            panServerBannerHTML.setPage(
+                    ServerDataRetrieval.getGameTrackerServerBannerIframe(
+                            ServerDataRetrieval.SERVER_IP, ServerDataRetrieval.PORT, SERVER_BANNER_WIDTH));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void refreshAll() {
         refreshGrid();
         refreshMapList();
         refreshGamesPlayedLabels();
         refreshMercenarySelectGrid();
+        refreshServerBanner();
     }
 }

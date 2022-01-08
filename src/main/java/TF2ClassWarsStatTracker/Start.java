@@ -12,8 +12,10 @@ public class Start {
     private static JFrame frame;
     private static final JComponent mainMenu = new MainMenu();
     private static final JComponent trackerScreen = new Tracking();
+    private static ServerDataRetrieval serverDataRetrieval;
 
     public static void main(String[] args) {
+        serverDataRetrieval = new ServerDataRetrieval();
         javax.swing.SwingUtilities.invokeLater(Start::initGUI);
     }
 
@@ -41,6 +43,10 @@ public class Start {
         JMenuItem menuEditUndo = new JMenuItem("Undo");
         menuEditUndo.addActionListener(new MenuItemHandler(MenuItemHandler.UNDO));
 
+        JMenu menuServer = new JMenu("Server");
+        JMenuItem menuServerNew = new JMenuItem("New server");
+        menuServerNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_SERVER));
+
         JMenu menuMaps = new JMenu("Maps");
         JMenuItem menuMapsNew = new JMenuItem("New map");
         menuMapsNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_MAP));
@@ -51,12 +57,15 @@ public class Start {
 
         menuBar.add(menuFile);
         menuBar.add(menuEdit);
+        menuBar.add(menuServer);
         menuBar.add(menuMaps);
-
-        menuEdit.add(menuEditUndo);
 
         menuFile.add(menuFileOptions);
         menuFile.add(menuFileExit);
+
+        menuEdit.add(menuEditUndo);
+
+        menuServer.add(menuServerNew);
 
         menuMaps.add(menuMapsNew);
         menuMaps.add(menuMapsRename);
@@ -87,5 +96,9 @@ public class Start {
     public static void exit() {
         Print.print("Exiting tracker program...");
         frame.dispose();
+    }
+
+    public static ServerDataRetrieval getServerDataRetrieval() {
+        return serverDataRetrieval;
     }
 }

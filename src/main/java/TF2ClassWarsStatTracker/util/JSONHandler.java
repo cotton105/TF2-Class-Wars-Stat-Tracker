@@ -116,13 +116,13 @@ public class JSONHandler {
             GameMap map = JSONHandler.getGameMapFromCSV(file.getName());
             maps.add(map);
         }
-        FileHandler.writeToJSONFile(maps, FileHandler.MAPS_JSON);
+        FileHandler.writeToJSONFile(maps, FileHandler.DEFAULT_MAPS_JSON);
     }
 
     public static List<GameMap> gameMapsFromJSON() throws FileNotFoundException {
         Gson gson = new Gson();
         List<GameMap> maps = new ArrayList<>();
-        JsonArray jsonArray = FileHandler.readJSONArray(FileHandler.MAPS_JSON);
+        JsonArray jsonArray = FileHandler.readJSONArray(FileHandler.DEFAULT_MAPS_JSON);
         for (JsonElement mapElement : jsonArray) {
             JsonObject jsonMap = mapElement.getAsJsonObject();
             maps.add(gson.fromJson(jsonMap, GameMap.class));
@@ -132,7 +132,7 @@ public class JSONHandler {
 
     public static GameMap gameMapFromJSON(String mapName) throws FileNotFoundException {
         Gson gson = new Gson();
-        for (JsonElement mapElement : FileHandler.readJSONArray(FileHandler.MAPS_JSON)) {
+        for (JsonElement mapElement : FileHandler.readJSONArray(FileHandler.DEFAULT_MAPS_JSON)) {
             JsonObject jsonMap = mapElement.getAsJsonObject();
             GameMap map = gson.fromJson(jsonMap, GameMap.class);
             if (map.getMapName().equals(mapName))

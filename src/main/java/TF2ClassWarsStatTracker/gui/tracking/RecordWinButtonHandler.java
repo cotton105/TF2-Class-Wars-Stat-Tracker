@@ -27,7 +27,7 @@ public class RecordWinButtonHandler implements ActionListener {
             int bluMercenary = Tracking.getSelectedBluMercenary();
             int redMercenary = Tracking.getSelectedRedMercenary();
             AppDataHandler.incrementWins(mapName, gameMode, bluMercenary, redMercenary, team);
-            FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.MAPS_JSON);
+            FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
             updateActionHistory(String.format("%s-%s-%d-%d-%d-%d",
                     AppDataHandler.RECORD_WIN, mapName, gameMode, bluMercenary, redMercenary, team));
         } catch (MapNotFoundException | IndexOutOfBoundsException ex) {

@@ -1,5 +1,6 @@
 package TF2ClassWarsStatTracker.util;
 
+import TF2ClassWarsStatTracker.exceptions.InvalidFileNameException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import com.google.gson.*;
 import com.opencsv.CSVReader;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class FileHandler {
-    public static final String MAPS_JSON = "res\\maps.json";
+    public static final String DEFAULT_MAPS_JSON = "res\\maps.json";
 
     public static ArrayList<String> readTextFileLines(String filename) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
@@ -75,15 +76,36 @@ public class FileHandler {
 
     public static void initialiseJsonMapsFile() {
         try {
-            File file = new File(FileHandler.MAPS_JSON);
-            String dirPath = MAPS_JSON.substring(0, MAPS_JSON.lastIndexOf("/") + 1);
+            File file = new File(FileHandler.DEFAULT_MAPS_JSON);
+            String dirPath = DEFAULT_MAPS_JSON.substring(0, DEFAULT_MAPS_JSON.lastIndexOf("\\") + 1);
             createDirectory(dirPath);
             if (file.createNewFile())
-                Print.format("File %s created", MAPS_JSON);
+                Print.format("File %s created", DEFAULT_MAPS_JSON);
             else
-                Print.format("File %s already exists.", MAPS_JSON);
+                Print.format("File %s already exists.", DEFAULT_MAPS_JSON);
             List<GameMap> maps = new ArrayList<>();
-            writeToJSONFile(maps, MAPS_JSON);
+            writeToJSONFile(maps, DEFAULT_MAPS_JSON);
+        } catch (IOException ex) {
+            Print.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public static void newServerJsonFile(String serverName) throws InvalidFileNameException {
+        try {
+            if (!validFileName(serverName))
+                throw new InvalidFileNameException(serverName);
+            String filePath = "res\\servers\\" + serverName + ".json";
+            File file = new File(filePath);
+            String dirPath = filePath.substring(0, filePath.lastIndexOf("\\") + 1);
+            createDirectory(dirPath);
+            if (file.createNewFile()) {
+                Print.format("File %s created", filePath);
+                List<GameMap> maps = new ArrayList<>();
+                writeToJSONFile(maps, filePath);
+            }
+            else
+                Print.format("File %s already exists.", filePath);
         } catch (IOException ex) {
             Print.error(ex.getMessage());
             ex.printStackTrace();
@@ -105,5 +127,9 @@ public class FileHandler {
 
     public static String removeFileExtension(String filename) {
         return filename.substring(0, filename.lastIndexOf('.'));
+    }
+
+    public static boolean validFileName(String filename) {
+        return !(filename.equals("") || filename == null);
     }
 }

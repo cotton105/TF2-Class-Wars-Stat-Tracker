@@ -2,10 +2,7 @@ package TF2ClassWarsStatTracker.gui;
 
 import TF2ClassWarsStatTracker.AppDataHandler;
 import TF2ClassWarsStatTracker.Start;
-import TF2ClassWarsStatTracker.exceptions.ActionHistoryEmptyException;
-import TF2ClassWarsStatTracker.exceptions.InvalidMapNameException;
-import TF2ClassWarsStatTracker.exceptions.MapAlreadyExistsException;
-import TF2ClassWarsStatTracker.exceptions.MapNotFoundException;
+import TF2ClassWarsStatTracker.exceptions.*;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.FileHandler;
@@ -20,7 +17,7 @@ import static TF2ClassWarsStatTracker.AppDataHandler.updateActionHistory;
 
 public class MenuItemHandler implements ActionListener {
     public static final int
-            EXIT = 0, OPTIONS = 1, UNDO = 2, NEW_MAP = 3, RENAME_MAP = 4, IMPORT_MAPS_DATA = 5;
+            EXIT = 0, OPTIONS = 1, UNDO = 2, NEW_SERVER = 3, NEW_MAP = 4, RENAME_MAP = 5, IMPORT_MAPS_DATA = 6;
     private final int action;
 
     public MenuItemHandler(int action) {
@@ -32,6 +29,7 @@ public class MenuItemHandler implements ActionListener {
             case EXIT -> Start.exit();
             case OPTIONS -> Print.print("Feature not implemented");
             case UNDO -> undo();
+            case NEW_SERVER -> addServer();
             case NEW_MAP -> addMap();
             case RENAME_MAP -> renameMap();
             case IMPORT_MAPS_DATA -> importMaps();
@@ -41,7 +39,7 @@ public class MenuItemHandler implements ActionListener {
     private void undo() {
         try {
             AppDataHandler.undoLastAction();
-            FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.MAPS_JSON);
+            FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
             Tracking.refreshAll();
         } catch (MapNotFoundException ex) {
             JOptionPane.showMessageDialog(Start.getFrame(), ex.getMessage(), "Undo failure", JOptionPane.ERROR_MESSAGE);
@@ -51,13 +49,41 @@ public class MenuItemHandler implements ActionListener {
         }
     }
 
+    private void addServer() {
+        Object[] newServerComponents = getUserInputDialogBoxComponents();
+        JPanel panServerName = (JPanel)newServerComponents[0];
+        JTextField textNewServerName = (JTextField)newServerComponents[1];
+
+        int chooseMapResult = JOptionPane.showConfirmDialog(
+                Start.getFrame(), panServerName, "Add new server",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (chooseMapResult == JOptionPane.CANCEL_OPTION) {
+            showCancelledDialog();
+        }
+        else if (chooseMapResult == JOptionPane.OK_OPTION) {
+            String newServerName = textNewServerName.getText();
+            if (newServerName != null) {
+                try {
+                    FileHandler.newServerJsonFile(newServerName);
+                } catch (InvalidFileNameException ex) {
+                    Print.error(ex.getMessage());
+                    JOptionPane.showMessageDialog(
+                            Start.getFrame(), ex.getMessage(), "Server add failure", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            } else {
+                showCancelledDialog();
+            }
+        }
+    }
+
     private void addMap() {
         String mapName = JOptionPane.showInputDialog(
                 Start.getFrame(), "Enter the new map name", "New map", JOptionPane.QUESTION_MESSAGE);
         try {
             if (GameMap.validMapName(mapName)) {
                 AppDataHandler.addMap(mapName);
-                FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.MAPS_JSON);
+                FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
                 updateActionHistory(String.format("%s-%s", AppDataHandler.NEW_MAP, mapName));
                 Tracking.setSelectedMap(mapName);
                 Tracking.refreshMapList();
@@ -84,7 +110,7 @@ public class MenuItemHandler implements ActionListener {
         else if (chooseMapResult == JOptionPane.OK_OPTION) {
             String selectedMap = mapDropDownRenameHandler.getSelected();
             if (selectedMap != null) {
-                Object[] renameMapComponents = getNewMapNameComponents();
+                Object[] renameMapComponents = getUserInputDialogBoxComponents();
                 JPanel panNewName = (JPanel)renameMapComponents[0];
                 JTextField fieldNewName = (JTextField)renameMapComponents[1];
                 int renameMapResult = JOptionPane.showConfirmDialog(
@@ -97,7 +123,7 @@ public class MenuItemHandler implements ActionListener {
                     try {
                         String newName = fieldNewName.getText();
                         AppDataHandler.renameMap(selectedMap, newName);
-                        FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.MAPS_JSON);
+                        FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
                         Tracking.refreshMapList();
                         Tracking.setSelectedMap(newName);
                         JOptionPane.showMessageDialog(
@@ -108,7 +134,6 @@ public class MenuItemHandler implements ActionListener {
                         Print.error(ex.getMessage());
                         JOptionPane.showMessageDialog(
                                 Start.getFrame(), ex.getMessage(), "Map rename failure", JOptionPane.ERROR_MESSAGE);
-                        ex.printStackTrace();
                     }
                 }
             } else {
@@ -119,7 +144,7 @@ public class MenuItemHandler implements ActionListener {
 
     private void showCancelledDialog() {
         JOptionPane.showMessageDialog(
-                Start.getFrame(), "Cancelled rename", "Rename cancelled", JOptionPane.INFORMATION_MESSAGE);
+                Start.getFrame(), "Action cancelled", "Action cancelled", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private Object[] getChooseMapComponents() {
@@ -146,7 +171,7 @@ public class MenuItemHandler implements ActionListener {
      * Gets a tuple of the required components for choosing a new name for the chosen map.
      * @return (1) The {@code JPanel} containing {@code JLabel} & {@code JTextField}, and (2) the {@code JTextField}
      */
-    private Object[] getNewMapNameComponents() {
+    private Object[] getUserInputDialogBoxComponents() {
         JPanel panNewName = new JPanel(new GridLayout(2, 1));
 
         JLabel labNewName = new JLabel("Enter new name");

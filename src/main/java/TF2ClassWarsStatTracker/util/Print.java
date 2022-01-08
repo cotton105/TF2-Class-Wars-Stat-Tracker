@@ -40,6 +40,10 @@ public class Print {
         error(String.format(msg, args));
     }
 
+    public static void debug(String msg, Object ... args) {
+        format("<DEBUG> " + msg, args);
+    }
+
     public static void commaSeparated(ArrayList<String> strs, boolean timestamp) {
         StringBuilder msg = new StringBuilder();
         for (String str : strs) {
