@@ -21,6 +21,9 @@ import static TF2ClassWarsStatTracker.util.Constants.*;
 
 public class Tracking extends TrackingGUIJPanel {
     public static final String OVERALL_MAP = "Overall scores";
+    public static final String
+            VIEW_OVERALL_TEXT = "View Overall",
+            REVERT_TO_MAP_TEXT = "Revert to Map";
     private static final int[] selectedMercenary = new int[] {-1, -1};
     private static final int SERVER_BANNER_WIDTH = 263;
     private static final JLabel[] labGamesWon = new JLabel[2];
@@ -34,6 +37,8 @@ public class Tracking extends TrackingGUIJPanel {
     private static JPanel panMercenaryGrid;
     private static JComboBox<String> mapDropdownSelect;
     private static JEditorPane panServerBannerHTML;
+    private static boolean displayOverallMap, displayOverallGameMode;
+    public static JButton butToggleOverallMap;
 
     public Tracking() {
         super(new BorderLayout());
@@ -45,7 +50,12 @@ public class Tracking extends TrackingGUIJPanel {
         JPanel panLeft = new JPanel(new BorderLayout());
         JPanel panRight = new JPanel(new BorderLayout());
 
-        selectedMap = OVERALL_MAP;  // Set default to the overall scores
+//        selectedMap = OVERALL_MAP;  // Set default to the overall scores
+        displayOverallMap = true;
+        displayOverallGameMode = true;
+        selectedMap = AppDataHandler.getMaps().get(0).getMapName();
+        selectedGameMode = NORMAL;
+
         mapDropdownSelect = new JComboBox<>();
         refreshMapList();
         mapDropdownSelect.addItemListener(new MapDropdownSelectHandler());
@@ -55,8 +65,13 @@ public class Tracking extends TrackingGUIJPanel {
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
-        JButton butViewOverallMap = new JButton("View Overall");
-        butViewOverallMap.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.OVERALL));
+        butToggleOverallMap = new JButton(REVERT_TO_MAP_TEXT);
+//        butToggleOverallMap.addActionListener(new GeneralButtonHandler(GeneralButtonHandler.OVERALL));
+        try {
+            butToggleOverallMap.addActionListener(new ToggleOverallMapButtonHandler(ToggleOverallMapButtonHandler.VIEW_OVERALL));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         JPanel panSelectedGameInfo = new JPanel(new GridLayout(3, 1));
         JPanel panSelectedMapInfo = new JPanel(new FlowLayout());
         labGamesPlayedTotal = new JLabel();
@@ -101,7 +116,7 @@ public class Tracking extends TrackingGUIJPanel {
         panSelectedGameInfo.add(labGamesPlayedTotal);
 
         panSelectedMapInfo.add(mapDropdownSelect);
-        panSelectedMapInfo.add(butViewOverallMap);
+        panSelectedMapInfo.add(butToggleOverallMap);
 
         // Set fonts
         setDefaultFont(this, TF2secondary.deriveFont(16f));
@@ -174,7 +189,7 @@ public class Tracking extends TrackingGUIJPanel {
         MapDropdownSelectHandler.setMapBeingAdded(true);
         mapDropdownSelect.removeAllItems();
         List<String> mapNames = AppDataHandler.getMapNames();
-        mapDropdownSelect.addItem(OVERALL_MAP);
+        //mapDropdownSelect.addItem(OVERALL_MAP);
         for (Object mapName : mapNames.toArray())
             mapDropdownSelect.addItem(mapName.toString());
         MapDropdownSelectHandler.setMapBeingAdded(false);
@@ -185,15 +200,18 @@ public class Tracking extends TrackingGUIJPanel {
         panMercenaryGrid.removeAll();
         GameModeGrid grid;
         try {
-            if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1) {
+//            if (selectedMap.equals(OVERALL_MAP) && selectedGameMode == -1) {
+            if (displayOverallMap && displayOverallGameMode) {
                 setWinButtonAvailability(false);
                 grid = AppDataHandler.getOverallGrid();
             }
-            else if (selectedGameMode == -1) {
+//            else if (selectedGameMode == -1) {
+            else if (displayOverallGameMode) {
                 setWinButtonAvailability(false);
                 grid = AppDataHandler.getOverallGrid(selectedMap);
             }
-            else if (selectedMap.equals(OVERALL_MAP)) {
+//            else if (selectedMap.equals(OVERALL_MAP)) {
+            else if (displayOverallMap) {
                 setWinButtonAvailability(false);
                 grid = AppDataHandler.getGameModeOverallGrid(selectedGameMode);
             }
@@ -293,12 +311,39 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     static void viewOverall() {
-        setSelectedMap(OVERALL_MAP);
-        mapDropdownSelect.setSelectedItem(OVERALL_MAP);
+//        setSelectedMap(OVERALL_MAP);
+        setSelectedMap(null);
+//        mapDropdownSelect.setSelectedItem(OVERALL_MAP);
+    }
+
+    public static void setDisplayOverallMap(boolean displayOverallMap) {
+        Tracking.displayOverallMap = displayOverallMap;
+        ToggleOverallMapButtonHandler.setDisplayOverall(displayOverallMap);
+        refreshGamesPlayedLabels();
+        refreshMercenarySelectGrid();
+        refreshGamesPlayedLabels();
+        if (displayOverallMap)
+        {
+            Tracking.butToggleOverallMap.setText(REVERT_TO_MAP_TEXT);
+        }
+        else {
+            Tracking.butToggleOverallMap.setText(VIEW_OVERALL_TEXT);
+        }
+    }
+
+    public static void setDisplayOverallGameMode(boolean displayOverallGameMode) {
+        Tracking.displayOverallGameMode = displayOverallGameMode;
     }
 
     public static void setSelectedMap(String mapName) {
-        selectedMap = mapName;
+//        selectedMap = mapName;
+        if (mapName != null){
+            displayOverallMap = false;
+            selectedMap = mapName;
+            butToggleOverallMap.setText("");
+        }
+        else
+            displayOverallMap = true;
         refreshGrid();
     }
 
@@ -307,7 +352,13 @@ public class Tracking extends TrackingGUIJPanel {
     }
 
     static void setSelectedGameMode(int gameMode) {
-        selectedGameMode = gameMode;
+//        selectedGameMode = gameMode;
+        if (gameMode != -1) {
+            displayOverallGameMode = false;
+            selectedGameMode = gameMode;
+        }
+        else
+            displayOverallGameMode = true;
         refreshGrid();
         refreshGamesPlayedLabels();
     }
@@ -324,10 +375,19 @@ public class Tracking extends TrackingGUIJPanel {
         return selectedMercenary[RED];
     }
 
-    static void refreshGamesPlayedLabels() {
+    public static void refreshGamesPlayedLabels() {
         if (0 <= selectedMercenary[BLU] && selectedMercenary[BLU] < 9 && 0 <= selectedMercenary[RED] && selectedMercenary[RED] < 9) {
             try {
-                int[] totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedMercenary[BLU], selectedMercenary[RED]);
+                // update AppDataHandler (displayOverallMap)
+                int[] totalWins;
+                if (displayOverallMap && displayOverallGameMode)
+                    totalWins = AppDataHandler.getMatchupWins(selectedMercenary[BLU], selectedMercenary[RED]);
+                else if (displayOverallMap && !displayOverallGameMode)
+                    totalWins = AppDataHandler.getMatchupWins(selectedGameMode, selectedMercenary[BLU], selectedMercenary[RED]);
+                else if (!displayOverallMap && displayOverallGameMode)
+                    totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedMercenary[BLU], selectedMercenary[RED]);
+                else
+                    totalWins = AppDataHandler.getMatchupWins(selectedMap, selectedGameMode, selectedMercenary[BLU], selectedMercenary[RED]);
                 for (int i = 0; i < labGamesWon.length; i++) {
                     String gamesWonText = String.format("Won: %d", totalWins[i]);
                     labGamesWon[i].setText(gamesWonText);
@@ -337,7 +397,11 @@ public class Tracking extends TrackingGUIJPanel {
             }
         }
         try {
-            int totalGames = AppDataHandler.getTotalGames(selectedMap, selectedGameMode);
+            int totalGames;
+            if (displayOverallMap && displayOverallGameMode) totalGames = AppDataHandler.getTotalGames();
+            else if (displayOverallMap && !displayOverallGameMode) totalGames = AppDataHandler.getTotalGames(selectedGameMode);
+            else if (!displayOverallMap && displayOverallGameMode) totalGames = AppDataHandler.getTotalGames(selectedMap);
+            else totalGames = AppDataHandler.getTotalGames(selectedMap, selectedGameMode);
             labGamesPlayedTotal.setText(String.format("Total games recorded in this configuration: %d", totalGames));
         } catch (MapNotFoundException ex) {
             ex.printStackTrace();
