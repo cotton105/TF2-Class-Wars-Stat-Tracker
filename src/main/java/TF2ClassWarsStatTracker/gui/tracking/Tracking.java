@@ -11,6 +11,7 @@ import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,9 +31,9 @@ public class Tracking extends TrackingGUIJPanel {
     private static String selectedServer, selectedMap;
     private static int selectedGameMode = -1;
     private static JLabel labGamesPlayedTotal;
-    private static JEditorPane panServerBannerHTML;
     private static JPanel panMercenaryGrid;
     private static JComboBox<String> mapDropdownSelect;
+    private static JEditorPane panServerBannerHTML;
 
     public Tracking() {
         super(new BorderLayout());
@@ -48,6 +49,9 @@ public class Tracking extends TrackingGUIJPanel {
         mapDropdownSelect = new JComboBox<>();
         refreshMapList();
         mapDropdownSelect.addItemListener(new MapDropdownSelectHandler());
+
+        initialiseServerBanner();
+        JScrollPane panServerBannerScroll = new JScrollPane(panServerBannerHTML);
 
         JPanel panBluVsRed = new JPanel(new BorderLayout());
 
@@ -83,7 +87,7 @@ public class Tracking extends TrackingGUIJPanel {
 
         panMenuBar.add(butBack);
 
-        panLeft.add(gameTrackerServerBanner(), BorderLayout.CENTER);
+        panLeft.add(panServerBannerScroll, BorderLayout.CENTER);
         panLeft.add(panBluVsRed, BorderLayout.SOUTH);
 
         panBluVsRed.add(classSelectGrid(BLU), BorderLayout.NORTH);
@@ -106,13 +110,15 @@ public class Tracking extends TrackingGUIJPanel {
 
         refreshGrid();
         refreshGamesPlayedLabels();
+        refreshServerBanner();
     }
 
-    private JComponent gameTrackerServerBanner() {
+    private static void initialiseServerBanner() {
         // TODO: Fix inconsistent panel size for the server banner (sometimes window is small and others it's bigger)
         panServerBannerHTML = new JEditorPane();
         panServerBannerHTML.setEditable(false);
         panServerBannerHTML.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+        // Make links clickable
         panServerBannerHTML.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
@@ -122,14 +128,6 @@ public class Tracking extends TrackingGUIJPanel {
                 }
             }
         });
-        JScrollPane panServerBannerHTMLScroll = new JScrollPane();
-        try {
-            panServerBannerHTML.setPage(ServerDataRetrieval.getGameTrackerServerBannerIframe(ServerDataRetrieval.SERVER_IP, ServerDataRetrieval.PORT, SERVER_BANNER_WIDTH));
-            panServerBannerHTMLScroll = new JScrollPane(panServerBannerHTML);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return panServerBannerHTMLScroll;
     }
 
     private JComponent classSelectGrid(int team) {
@@ -346,13 +344,16 @@ public class Tracking extends TrackingGUIJPanel {
         }
     }
 
-    // TODO: Make this function work properly, the server info needs to be reliably refreshed
-    private static void refreshServerBanner() {
+    // TODO: retain scroll position after refreshing
+    public static void refreshServerBanner() {
+        Document document = panServerBannerHTML.getDocument();
+        document.putProperty(Document.StreamDescriptionProperty, null);  // Specify that the editor content is null
         try {
-            panServerBannerHTML.setPage("127.0.0.1");
-            panServerBannerHTML.setPage(
-                    ServerDataRetrieval.getGameTrackerServerBannerIframe(
-                            ServerDataRetrieval.SERVER_IP, ServerDataRetrieval.PORT, SERVER_BANNER_WIDTH));
+            JScrollBar scrollBar = ((JScrollPane)(panServerBannerHTML.getParent().getParent())).getVerticalScrollBar();
+            int scrollValue = scrollBar.getValue();
+            panServerBannerHTML.setPage(ServerDataRetrieval.getGameTrackerServerBannerIframe(
+                    ServerDataRetrieval.SERVER_IP, ServerDataRetrieval.PORT, SERVER_BANNER_WIDTH));
+            scrollBar.setValue(scrollValue);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

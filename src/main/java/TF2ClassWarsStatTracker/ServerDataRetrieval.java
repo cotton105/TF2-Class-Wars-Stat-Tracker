@@ -1,5 +1,6 @@
 package TF2ClassWarsStatTracker;
 
+import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.Print;
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
@@ -15,7 +16,7 @@ public class ServerDataRetrieval implements Runnable {
     private SourceServer server;
     public static final String SERVER_IP = "31.186.251.170";
     public static final int PORT = 27015;
-    private static final int POLLING_RATE = 5000;
+    private static final int POLLING_RATE = 10000;
 
     public ServerDataRetrieval() {
         Thread thread = new Thread(this, "Server Data Retrieval");
@@ -31,6 +32,7 @@ public class ServerDataRetrieval implements Runnable {
             TimerTask serverPoll = new TimerTask() {
                 @Override
                 public void run() {
+                    /*
                     try {
                         updateServerData();
 //                        listInfo();
@@ -39,6 +41,8 @@ public class ServerDataRetrieval implements Runnable {
                     } catch (SteamCondenserException | TimeoutException ex) {
                         ex.printStackTrace();
                     }
+                    */
+                    Tracking.refreshServerBanner();
                 }
             };
             timer.schedule(serverPoll, 0, POLLING_RATE);
