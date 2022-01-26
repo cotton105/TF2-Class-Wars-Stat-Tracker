@@ -2,7 +2,6 @@ package TF2ClassWarsStatTracker;
 
 import TF2ClassWarsStatTracker.exceptions.*;
 import TF2ClassWarsStatTracker.game.*;
-import TF2ClassWarsStatTracker.gui.tracking.Tracking;
 import TF2ClassWarsStatTracker.util.FileHandler;
 import TF2ClassWarsStatTracker.util.JSONHandler;
 import TF2ClassWarsStatTracker.util.Print;
@@ -71,32 +70,10 @@ public class AppDataHandler {
 
     public static int getTotalGames(String mapName, int gameMode) throws MapNotFoundException {
         int games = 0;
-        /*
-        if (mapName.equals(Tracking.OVERALL_MAP) && gameMode == -1)
-            for (GameMap map : getMaps())
-                for (GameModeGrid grid : map.getGameModeGrids())
-                    for (int[][] bluMercenary : grid.getMatchupWins())
-                        for (int[] redMercenary : bluMercenary)
-                            for (int winCount : redMercenary)
-                                games += winCount;
-        else if (gameMode == -1)
-            for (GameModeGrid grid : getGameModeGrids(mapName))
-                for (int[][] bluMercenary : grid.getMatchupWins())
-                    for (int[] redMercenary : bluMercenary)
-                        for (int winCount : redMercenary)
-                            games += winCount;
-        else if (mapName.equals(Tracking.OVERALL_MAP))
-            for (GameMap map : getMaps())
-                for (int[][] bluMercenary : map.getGameModeGrid(gameMode).getMatchupWins())
-                    for (int[] redMercenary : bluMercenary)
-                        for (int winCount : redMercenary)
-                            games += winCount;
-        else
-        */
-            for (int[][] bluMercenary : getMap(mapName).getGameModeGrid(gameMode).getMatchupWins())
-                for (int[] redMercenary : bluMercenary)
-                    for (int winCount : redMercenary)
-                        games += winCount;
+        for (int[][] bluMercenary : getMap(mapName).getGameModeGrid(gameMode).getMatchupWins())
+            for (int[] redMercenary : bluMercenary)
+                for (int winCount : redMercenary)
+                    games += winCount;
         return games;
     }
 
@@ -159,31 +136,7 @@ public class AppDataHandler {
     }
 
     public static int[] getMatchupWins(String mapName, int gameMode, int bluMercenary, int redMercenary) throws MapNotFoundException {
-        int[] wins = new int[2];
-        /*
-        if (mapName.equals(Tracking.OVERALL_MAP) && gameMode == -1)
-            for (GameMap map : getMaps())
-                for (GameModeGrid grid : map.getGameModeGrids()) {
-                    int[] matchupWins = grid.getMatchupWins(bluMercenary, redMercenary);
-                    for (int i=0; i<matchupWins.length; i++)
-                        wins[i] += matchupWins[i];
-                }
-        else if (gameMode == -1)
-            for (GameModeGrid grid : getGameModeGrids(mapName)) {
-                int[] matchupWins = grid.getMatchupWins(bluMercenary, redMercenary);
-                for (int i=0; i<matchupWins.length; i++)
-                    wins[i] += matchupWins[i];
-            }
-        else if (mapName.equals(Tracking.OVERALL_MAP))
-            for (GameMap map : getMaps()) {
-                int[] matchupWins = map.getGameModeGrid(gameMode).getMatchupWins(bluMercenary, redMercenary);
-                for (int i=0; i<matchupWins.length; i++)
-                    wins[i] += matchupWins[i];
-            }
-        else
-        */
-            wins = getMap(mapName).getGameModeGrid(gameMode).getMatchupWins(bluMercenary, redMercenary);
-        return wins;
+        return getMap(mapName).getGameModeGrid(gameMode).getMatchupWins(bluMercenary, redMercenary);
     }
 
     public static int[] getMatchupWins(int bluMercenary, int redMercenary) {

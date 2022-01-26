@@ -1,11 +1,6 @@
 package TF2ClassWarsStatTracker.game;
 
 public class GameModeGrid {
-    public final static int NORMAL = 0, GLOBAL_ROLLS = 1, MADNESS = 2, MULTIPLY_WEAPONS_STATS = 3, GOOD_ROLLS = 4;
-    public final static String[] GAME_MODES = new String[] {
-            "Normal", "Global Rolls",
-            "Madness", "Multiply Weapons' Stats",
-            "Good Rolls"};
     private final int[][][] mercenaryWins;  // [BLU Mercenary] [RED Mercenary] [{BLU Wins, RED Wins}]
 
     public GameModeGrid() {

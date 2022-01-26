@@ -15,10 +15,9 @@ public class MapDropdownSelectHandler implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
         if (!mapBeingAdded) {
             ItemSelectable is = e.getItemSelectable();
-            Tracking.setSelectedMap(selectedString(is));
-            Tracking.setDisplayOverallMap(false);
-            //ToggleOverallMapButtonHandler.setDisplayOverall(false);
-            Tracking.refreshGamesPlayedLabels();
+            TrackerWindow.instance.setSelectedMap(selectedString(is));
+            TrackerWindow.instance.setDisplayOverallMap(false);
+            TrackerWindow.instance.refreshGamesPlayedLabels();
         }
     }
 

@@ -4,7 +4,7 @@ import TF2ClassWarsStatTracker.AppDataHandler;
 import TF2ClassWarsStatTracker.Start;
 import TF2ClassWarsStatTracker.exceptions.*;
 import TF2ClassWarsStatTracker.game.GameMap;
-import TF2ClassWarsStatTracker.gui.tracking.Tracking;
+import TF2ClassWarsStatTracker.gui.tracking.TrackerWindow;
 import TF2ClassWarsStatTracker.util.FileHandler;
 import TF2ClassWarsStatTracker.util.Print;
 
@@ -40,7 +40,7 @@ public class MenuItemHandler implements ActionListener {
         try {
             AppDataHandler.undoLastAction();
             FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
-            Tracking.refreshAll();
+            TrackerWindow.instance.refreshAll();
         } catch (MapNotFoundException ex) {
             JOptionPane.showMessageDialog(Start.getFrame(), ex.getMessage(), "Undo failure", JOptionPane.ERROR_MESSAGE);
             Print.error(ex.getMessage());
@@ -85,8 +85,8 @@ public class MenuItemHandler implements ActionListener {
                 AppDataHandler.addMap(mapName);
                 FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
                 updateActionHistory(String.format("%s-%s", AppDataHandler.NEW_MAP, mapName));
-                Tracking.setSelectedMap(mapName);
-                Tracking.refreshMapList();
+                TrackerWindow.instance.setSelectedMap(mapName);
+                TrackerWindow.instance.refreshMapList();
             } else if (mapName != null) {
                 throw new InvalidMapNameException(mapName);
             }
@@ -124,8 +124,8 @@ public class MenuItemHandler implements ActionListener {
                         String newName = fieldNewName.getText();
                         AppDataHandler.renameMap(selectedMap, newName);
                         FileHandler.writeToJSONFile(AppDataHandler.getMaps(), FileHandler.DEFAULT_MAPS_JSON);
-                        Tracking.refreshMapList();
-                        Tracking.setSelectedMap(newName);
+                        TrackerWindow.instance.refreshMapList();
+                        TrackerWindow.instance.setSelectedMap(newName);
                         JOptionPane.showMessageDialog(
                                 Start.getFrame(),
                                 String.format("Successfully renamed map \"%s\" to \"%s\"", selectedMap, newName),

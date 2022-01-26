@@ -1,7 +1,5 @@
 package TF2ClassWarsStatTracker.gui.tracking;
 
-import TF2ClassWarsStatTracker.util.Constants;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,8 +13,8 @@ public class GridMercButtonSelectButtonHandler implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tracking.setSelectedMercenaries(blu, red);
-        Tracking.refreshGamesPlayedLabels();
-        Tracking.refreshGrid();
+        TrackerWindow.instance.setSelectedMercenaries(blu, red);
+        TrackerWindow.instance.refreshGamesPlayedLabels();
+        TrackerWindow.instance.refreshBiasGrid();
     }
 }

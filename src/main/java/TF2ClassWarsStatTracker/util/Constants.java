@@ -5,7 +5,7 @@ import java.awt.*;
 public class Constants {
     public static final int
             BLU = 0, RED = 1,
-            NORMAL = 0, GLOBAL_ROLLS = 1, MADNESS = 2, MULTIPLY_WEAPONS_STATS = 3, GOOD_ROLLS = 4;
+            OVERALL = 0, NORMAL = 1, GLOBAL_ROLLS = 2, MADNESS = 3, MULTIPLY_WEAPONS_STATS = 4, GOOD_ROLLS = 5;
     public static final Color
             BLU_COLOUR = new Color(171,203,255),
             RED_COLOUR = new Color(255,125,125);
@@ -15,5 +15,9 @@ public class Constants {
                 "Demoman", "Heavy", "Engineer",
                 "Medic", "Sniper", "Spy"},
             TEAM = {
-                "BLU", "RED"};
+                "BLU", "RED"},
+            GAME_MODES = new String[] {
+                "Overall", "Normal", "Global Rolls",
+                "Madness", "Multiply Weapons' Stats",
+                "Good Rolls"};
 }

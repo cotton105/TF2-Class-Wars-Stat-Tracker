@@ -13,8 +13,8 @@ public class ClassSelectButtonHandler implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tracking.setSelectedMercenary(team, mercenary);
-        Tracking.refreshGamesPlayedLabels();
-        Tracking.refreshGrid();
+        TrackerWindow.instance.setSelectedMercenary(team, mercenary);
+        TrackerWindow.instance.refreshGamesPlayedLabels();
+        TrackerWindow.instance.refreshBiasGrid();
     }
 }

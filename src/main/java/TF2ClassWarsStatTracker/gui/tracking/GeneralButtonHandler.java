@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GeneralButtonHandler implements ActionListener {
-    public static final int BACK = 0, OVERALL = 1;
+    public static final int BACK = 0;
     private final int action;
 
     GeneralButtonHandler(int action) {
@@ -17,7 +17,6 @@ public class GeneralButtonHandler implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (action) {
             case BACK -> Start.setActiveContentPane(Start.getMainMenu());
-            case OVERALL -> Tracking.viewOverall();
         }
     }
 }

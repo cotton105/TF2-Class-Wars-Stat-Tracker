@@ -3,6 +3,8 @@ package TF2ClassWarsStatTracker.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import static TF2ClassWarsStatTracker.util.Constants.GAME_MODES;
+
 public class GameMap implements Comparable<GameMap> {
     private final List<GameModeGrid> gameModeGrids;
     private String mapName;
@@ -14,7 +16,7 @@ public class GameMap implements Comparable<GameMap> {
     }
 
     public void initialiseGameModeGrids() {
-        for (int i=0; i<GameModeGrid.GAME_MODES.length; i++)
+        for (int i=0; i<GAME_MODES.length; i++)
             gameModeGrids.add(new GameModeGrid());
     }
 

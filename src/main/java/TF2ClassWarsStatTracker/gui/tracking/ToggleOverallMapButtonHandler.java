@@ -16,8 +16,8 @@ public class ToggleOverallMapButtonHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         displayOverall = !displayOverall;
-        Tracking.setDisplayOverallMap(displayOverall);
-        Tracking.refreshGrid();
+        TrackerWindow.instance.setDisplayOverallMap(displayOverall);
+        TrackerWindow.instance.refreshBiasGrid();
     }
 
     public static void setDisplayOverall(boolean displayOverall) {

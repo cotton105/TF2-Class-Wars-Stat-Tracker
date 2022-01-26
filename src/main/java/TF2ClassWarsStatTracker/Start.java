@@ -2,7 +2,7 @@ package TF2ClassWarsStatTracker;
 
 import TF2ClassWarsStatTracker.gui.MenuItemHandler;
 import TF2ClassWarsStatTracker.gui.mainmenu.MainMenu;
-import TF2ClassWarsStatTracker.gui.tracking.Tracking;
+import TF2ClassWarsStatTracker.gui.tracking.TrackerWindow;
 import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
@@ -11,7 +11,6 @@ public class Start {
     private static final int WIDTH = 400, HEIGHT = 400;
     private static JFrame frame;
     private static final JComponent mainMenu = new MainMenu();
-    private static final JComponent trackerScreen = new Tracking();
     private static ServerDataRetrieval serverDataRetrieval;
 
     public static void main(String[] args) {
@@ -21,32 +20,57 @@ public class Start {
 
     private static void initGUI() {
         frame = new JFrame("TF2 Class Wars Stat Tracker");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         initMenuBar();
-
+        TrackerWindow.initialise();
         setActiveContentPane(mainMenu);
+
         frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
     private static void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
+        menuBar.add(getFileMenu());
+        menuBar.add(getEditMenu());
+        menuBar.add(getServerMenu());
+        menuBar.add(getMapsMenu());
+
+        frame.setJMenuBar(menuBar);
+    }
+
+    private static JMenu getFileMenu() {
         JMenu menuFile = new JMenu("File");
         JMenuItem menuFileOptions = new JMenuItem("Options");
         menuFileOptions.addActionListener(new MenuItemHandler(MenuItemHandler.OPTIONS));
         JMenuItem menuFileExit = new JMenuItem("Exit");
         menuFileExit.addActionListener(new MenuItemHandler(MenuItemHandler.EXIT));
 
+        menuFile.add(menuFileOptions);
+        menuFile.add(menuFileExit);
+        return menuFile;
+    }
+
+    private static JMenu getEditMenu() {
         JMenu menuEdit = new JMenu("Edit");
         JMenuItem menuEditUndo = new JMenuItem("Undo");
         menuEditUndo.addActionListener(new MenuItemHandler(MenuItemHandler.UNDO));
 
+        menuEdit.add(menuEditUndo);
+        return menuEdit;
+    }
+
+    private static JMenu getServerMenu() {
         JMenu menuServer = new JMenu("Server");
         JMenuItem menuServerNew = new JMenuItem("New server");
         menuServerNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_SERVER));
 
+        menuServer.add(menuServerNew);
+        return menuServer;
+    }
+
+    private static JMenu getMapsMenu() {
         JMenu menuMaps = new JMenu("Maps");
         JMenuItem menuMapsNew = new JMenuItem("New map");
         menuMapsNew.addActionListener(new MenuItemHandler(MenuItemHandler.NEW_MAP));
@@ -55,23 +79,10 @@ public class Start {
         JMenuItem menuMapsImport = new JMenuItem("Import maps data");
         menuMapsImport.addActionListener(new MenuItemHandler(MenuItemHandler.IMPORT_MAPS_DATA));
 
-        menuBar.add(menuFile);
-        menuBar.add(menuEdit);
-        menuBar.add(menuServer);
-        menuBar.add(menuMaps);
-
-        menuFile.add(menuFileOptions);
-        menuFile.add(menuFileExit);
-
-        menuEdit.add(menuEditUndo);
-
-        menuServer.add(menuServerNew);
-
         menuMaps.add(menuMapsNew);
         menuMaps.add(menuMapsRename);
         menuMaps.add(menuMapsImport);
-
-        frame.setJMenuBar(menuBar);
+        return menuMaps;
     }
 
     public static JFrame getFrame() {
@@ -89,16 +100,12 @@ public class Start {
         return mainMenu;
     }
 
-    public static JComponent getTrackerScreen() {
-        return trackerScreen;
+    public static ServerDataRetrieval getServerDataRetrieval() {
+        return serverDataRetrieval;
     }
 
     public static void exit() {
         Print.print("Exiting tracker program...");
         frame.dispose();
-    }
-
-    public static ServerDataRetrieval getServerDataRetrieval() {
-        return serverDataRetrieval;
     }
 }

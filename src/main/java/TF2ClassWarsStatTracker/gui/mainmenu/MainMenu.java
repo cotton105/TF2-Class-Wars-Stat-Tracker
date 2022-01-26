@@ -13,12 +13,16 @@ public class MainMenu extends TrackingGUIJPanel {
         JLabel labMenu = new JLabel("Menu");
         labMenu.setHorizontalAlignment(JLabel.CENTER);
 
+        Dimension defaultButtonDimension = new Dimension(140, 40);
         JButton butTracker = new JButton("Tracker");
         butTracker.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.TRACKER));
+        butTracker.setPreferredSize(defaultButtonDimension);
         JButton butStats = new JButton("View stats");
         butStats.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.VIEW_STATS));
+        butStats.setPreferredSize(defaultButtonDimension);
         JButton butExit = new JButton("Exit");
         butExit.addActionListener(new MainMenuButtonHandler(MainMenuButtonHandler.EXIT));
+        butExit.setPreferredSize(defaultButtonDimension);
 
         add(labMenu);
         add(butTracker);

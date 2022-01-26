@@ -1,6 +1,6 @@
 package TF2ClassWarsStatTracker;
 
-import TF2ClassWarsStatTracker.gui.tracking.Tracking;
+import TF2ClassWarsStatTracker.gui.tracking.TrackerWindow;
 import TF2ClassWarsStatTracker.util.Print;
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
@@ -35,14 +35,15 @@ public class ServerDataRetrieval implements Runnable {
                     /*
                     try {
                         updateServerData();
-//                        listInfo();
-//                        listRules();
-//                        listPlayers();
+                        listInfo();
+                        listRules();
+                        listPlayers();
                     } catch (SteamCondenserException | TimeoutException ex) {
                         ex.printStackTrace();
                     }
                     */
-                    Tracking.refreshServerBanner();
+                    if (TrackerWindow.instance != null)
+                        TrackerWindow.instance.refreshServerBanner();
                 }
             };
             timer.schedule(serverPoll, 0, POLLING_RATE);
