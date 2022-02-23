@@ -2,7 +2,7 @@ package TF2ClassWarsStatTracker.util;
 
 import TF2ClassWarsStatTracker.AppDataHandler;
 import TF2ClassWarsStatTracker.exceptions.InvalidTeamNumberException;
-import TF2ClassWarsStatTracker.exceptions.NoMatchingRecordException;
+import TF2ClassWarsStatTracker.exceptions.TooManyResultsException;
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.GameModeGrid;
 
@@ -13,158 +13,225 @@ import static TF2ClassWarsStatTracker.util.Constants.BLU;
 import static TF2ClassWarsStatTracker.util.Constants.RED;
 
 public class DBHandler {
+    private static final String
+            MERCENARY_TABLE = "Mercenary",
+            GAMEMODE_TABLE = "GameMode",
+            OBJECTIVE_TABLE = "Objective",
+            MAP_TABLE = "Map",
+            STAGE_TABLE = "Stage",
+            STAGEGAMEMODE_TABLE = "StageGameMode",
+            MATCHUP_TABLE = "Matchup",
+            LEGACYMATCHUP_TABLE = "LegacyMatchup";
     private static final String PROGRAM_DIR = System.getProperty("user.dir");
     private static Connection conn;
+    private static PreparedStatement GET_LAST_INSERT_ID_STMT;
 
     static {
         try {
-            conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ClassWarsMatchups",
-                    "root",
-                    ":U5)0y,8!i1r2{oEk@B6D7`O+t9C=zZm"
-            );
-
-//                FileHandler.createDirectory(PROGRAM_DIR + "/db");
-//                String dbStorageDir = "jdbc:sqlite:" + PROGRAM_DIR + "/db/matchupdata.db";
-//                conn = DriverManager.getConnection(dbStorageDir);
-                if (conn != null) {
-                    DatabaseMetaData meta = conn.getMetaData();
-                    System.out.println("The driver name is " + meta.getDriverName());
-                    System.out.println("A database connection has been made.");
-                }
+            FileHandler.createDirectory(PROGRAM_DIR + "\\db\\SQLite");
+            String dbStorageDir = "jdbc:sqlite:" + PROGRAM_DIR + "\\db\\SQLite\\ClassWarsMatchups.db";
+            conn = DriverManager.getConnection(dbStorageDir);
+            if (conn != null) {
+                DatabaseMetaData meta = conn.getMetaData();
+                System.out.println("The driver name is " + meta.getDriverName());
+                System.out.println("A database connection has been made.");
+                GET_LAST_INSERT_ID_STMT = conn.prepareStatement("SELECT LAST_INSERT_ROWID()");
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    private static boolean matchupExists(String mapName, int gameMode) {
-//        PreparedStatement matchupExistsStmt = conn.prepareStatement(
-//                "SELECT mtch.MatchupID " +
-//                    "FROM Matchup mtch " +
-//                    "JOIN StageGameMode sgm ON sgm.ConfigurationID = " +
-//                    "JOIN Map mp ON " +
-//                    "WHERE mp.MapName = ? AND g.GameModeName = ?"
-//        )
-        return false;
-    }
-
-    private static int[] getMatchupScores(String mapName, int stageNum, int gameMode, int bluMercenary, int redMercenary) throws SQLException, NoMatchingRecordException {
-        int[] scores = new int[2];
-        PreparedStatement getCurrentWinsStmt = conn.prepareStatement(
-                "SELECT mtch.BluWins, mtch.RedWins FROM Matchup mtch " +
-                        "JOIN StageGameMode sgm ON sgm.ConfigurationID = mtch.ConfigurationID " +
-                        "JOIN Stage s ON s.StageID = sgm.StageID " +
-                        "JOIN Map mp ON mp.MapID = s.MapID " +
-                        "JOIN GameMode g ON g.GameModeID = sgm.GameModeID " +
-                        "WHERE mp.MapName = ? AND s.StageNumber = ? AND g.GameModeName = ? AND mtch.BluMercenaryID = ? AND mtch.RedMercenaryID = ?"
-        );
-        getCurrentWinsStmt.setString(1, mapName);
-        getCurrentWinsStmt.setInt(2, stageNum);
-        getCurrentWinsStmt.setString(3, Constants.GAME_MODES[gameMode + 1]);
-        getCurrentWinsStmt.setInt(4, bluMercenary + 1);
-        getCurrentWinsStmt.setInt(5, redMercenary + 1);
-
-        ResultSet getCurrentWinsRS = getCurrentWinsStmt.executeQuery();
-        if (!getCurrentWinsRS.next()) {
-            throw new NoMatchingRecordException(
-                    String.format("Record matching parameters mapName = %s, stageNum = %d, gameMode = %d, " +
-                            "bluMercenary = %d, redMercenary = %d was not found."
-                    , mapName, stageNum, gameMode, bluMercenary, redMercenary));
-        }
-        scores[BLU] = getCurrentWinsRS.getInt(1);
-        scores[RED] = getCurrentWinsRS.getInt(2);
-        return scores;
-    }
-
-    // TODO: https://stackoverflow.com/a/30569923/18134637
-    private static void incrementMatchups(String mapName, int stageNum, int gameMode, int bluMercenary, int redMercenary, int team) throws SQLException, InvalidTeamNumberException {
+    private static void incrementMatchups(String mapName, int stageNum, String gameMode, String bluMercenary, String redMercenary, int team) throws InvalidTeamNumberException, SQLException {
         if (team != BLU && team != RED) throw new InvalidTeamNumberException();
-        try {
-            int[] scores = getMatchupScores(mapName, stageNum, gameMode, bluMercenary, redMercenary);
-            PreparedStatement incrementMatchupStmt = conn.prepareStatement(String.format(
-                    "UPDATE Matchup mtch " +
-                            "JOIN StageGameMode sgm ON sgm.ConfigurationID = mtch.ConfigurationID " +
-                            "JOIN Stage s ON s.StageID = sgm.StageID " +
-                            "JOIN Map mp ON mp.MapID = s.MapID " +
-                            "JOIN GameMode g ON g.GameModeID = sgm.GameModeID " +
-                            "SET mtch.%s = ? " +
-                            "WHERE mp.MapName = ? AND s.StageNumber = ? AND g.GameModeName = ? AND mtch.BluMercenaryID = ? AND mtch.RedMercenaryID = ?"
-                    , team == BLU ? "BluWins" : "RedWins")
-            );
-            incrementMatchupStmt.setInt(1, scores[team] + 1);
-            incrementMatchupStmt.setString(2, mapName);
-            incrementMatchupStmt.setInt(3, stageNum);
-            incrementMatchupStmt.setString(4, Constants.GAME_MODES[gameMode + 1]);
-            incrementMatchupStmt.setInt(5, bluMercenary + 1);
-            incrementMatchupStmt.setInt(6, redMercenary + 1);
-            incrementMatchupStmt.executeUpdate();
+        int matchupID = initiateMatchup(mapName, stageNum, gameMode, bluMercenary, redMercenary);
+        String winsColumn = team == BLU ? "BluWins" : "RedWins";
+        PreparedStatement incrementMatchupStmt = conn.prepareStatement(String.format(
+                "UPDATE Matchup SET %s = %s + 1 WHERE MatchupID = ?"
+                , winsColumn, winsColumn));
+        incrementMatchupStmt.setInt(1, matchupID);
+        incrementMatchupStmt.executeUpdate();
+        Print.format("Successfully recorded win:\n" +
+                "BLU | %-8s %s\n" +
+                "RED | %-8s %s"
+        , bluMercenary.toUpperCase(), team == BLU ? "+ 1" : "", redMercenary.toUpperCase(), team == RED ? "+ 1" : "");
+    }
+
+    private static void decrementMatchups(String mapName, int stageNum, String gameMode, String bluMercenary, String redMercenary, int team) throws SQLException {
+        if (team != BLU && team != RED) throw new InvalidTeamNumberException();
+        int matchupID = initiateMatchup(mapName, stageNum, gameMode, bluMercenary, redMercenary);
+        String winsColumn = team == BLU ? "BluWins" : "RedWins";
+        PreparedStatement decrementMatchupStmt = conn.prepareStatement(String.format(
+                "UPDATE Matchup SET %s = %s - 1 WHERE MatchupID = ?"
+                , winsColumn, winsColumn));
+        decrementMatchupStmt.setInt(1, matchupID);
+        decrementMatchupStmt.executeUpdate();
+    }
+
+    private static int getMercenaryDBID(String mercenaryName) throws SQLException {
+        PreparedStatement getMercenaryDBIDStmt = conn.prepareStatement(
+                "SELECT COUNT(*), MercenaryID FROM Mercenary WHERE UPPER(MercenaryName) = UPPER(?)"
+        );
+        getMercenaryDBIDStmt.setString(1, mercenaryName);
+        ResultSet getMercenaryDBIDRS = getMercenaryDBIDStmt.executeQuery();
+        getMercenaryDBIDRS.next();
+        int rowCount = getMercenaryDBIDRS.getInt(1);
+        if (rowCount != 1) throw new SQLException("Missing mercenary record from Mercenary table.");
+        else {
+            return getMercenaryDBIDRS.getInt(2);
         }
-        // TODO: Update this so that all the relevant records are present before attempting to add a new matchup entry
-        catch (NoMatchingRecordException ex) {
-            System.out.println(ex.getMessage());
-            PreparedStatement insertMatchupStmt = conn.prepareStatement(
-                    "INSERT INTO Matchup(ConfigurationID, BluMercenaryID, RedMercenaryID, BluWins, RedWins) VALUES " +
-                            "(" +
-                            "(" +
-                            "SELECT ConfigurationID " +
-                            "FROM StageGameMode sgm " +
-                            "JOIN Stage s ON s.StageID = sgm.StageID " +
-                            "JOIN Map m ON m.MapID = s.MapID " +
-                            "JOIN GameMode g ON g.GameModeID = sgm.GameModeID " +
-                            "WHERE m.MapName = ? AND s.StageNumber = ? AND g.GameModeName = ? " +
-                            "), " +
+    }
+
+    private static int getLastInsertID() throws SQLException {
+        ResultSet lastIdRS = GET_LAST_INSERT_ID_STMT.executeQuery();
+        lastIdRS.next();
+        return lastIdRS.getInt(1);
+    }
+
+    private static int initiateMap(String mapName) throws SQLException {
+        int mapID;
+        PreparedStatement getMapStmt = conn.prepareStatement(
+                "SELECT COUNT(*), MapID FROM Map WHERE MapName = ?"
+        );
+        getMapStmt.setString(1, mapName);
+        ResultSet getMapRS = getMapStmt.executeQuery();
+        getMapRS.next();
+        int rowCount = getMapRS.getInt(1);
+        if (rowCount > 1) throw new TooManyResultsException();
+        else if (rowCount == 0) {
+            PreparedStatement insertMapStmt = conn.prepareStatement(
+                    "INSERT INTO Map (MapName, ObjectiveID) VALUES " +
+                            "( " +
                             "?, " +
-                            "?, " +
-                            "?, " +
-                            "? " +
+                            "(SELECT ObjectiveID FROM Objective WHERE ObjectivePrefix = ?) " +
                             ")"
             );
-            insertMatchupStmt.setString(1, mapName);
-            insertMatchupStmt.setInt(2, stageNum);
-            insertMatchupStmt.setString(3, Constants.GAME_MODES[gameMode + 1]);
-
-            insertMatchupStmt.setInt(4, bluMercenary + 1);
-            insertMatchupStmt.setInt(5, redMercenary + 1);
-            insertMatchupStmt.setInt(6, team == BLU ? 1 : 0);
-            insertMatchupStmt.setInt(7, team == BLU ? 0 : 1);
-            insertMatchupStmt.executeUpdate();
+            insertMapStmt.setString(1, mapName);
+            insertMapStmt.setString(2, mapName.split("_")[0]);  // Get the prefix (gamemode) of the mapName
+            insertMapStmt.executeUpdate();
+            mapID = getLastInsertID();
+            System.out.printf("Missing map \"%s\" added to database (ID=%d).\n", mapName, mapID);
         }
+        else {
+            mapID = getMapRS.getInt(2);
+        }
+        return mapID;
     }
 
-    private static void testQuery() throws SQLException {
-        PreparedStatement statement;
-        statement = conn.prepareStatement(
-                "SELECT * FROM Matchup"
+    private static int initiateStage(int mapID, int stageNum) throws SQLException {
+        int stageID;
+        PreparedStatement getStageStmt = conn.prepareStatement(
+                "SELECT COUNT(*), StageID FROM Stage WHERE MapID = ? AND StageNumber = ?"
         );
-        ResultSet result = statement.executeQuery();
-        System.out.printf("%-20s %-20s %-8s %-8s %-8s %-8s\n",
-                "Matchup ID", "Configuration ID", "BLU Merc", "RED Merc", "BLU Wins", "RED Wins");
-        while (result.next()) {
-            System.out.printf("%-20d %-20d %-8d %-8d %-8d %-8d\n",
-                    result.getInt(1),
-                    result.getInt(2),
-                    result.getInt(3),
-                    result.getInt(4),
-                    result.getInt(5),
-                    result.getInt(6));
-        }
-    }
-
-    private static void testQuery1() throws SQLException {
-        PreparedStatement statement = conn.prepareStatement(
-                "SELECT * FROM Objective"
-        );
-        ResultSet result = statement.executeQuery();
-        System.out.printf("%-16s %-32s %-16s\n",
-                "Objective ID", "Objective Name", "Objective Prefix");
-        while (result.next()) {
-            System.out.printf(
-                    "%-16d %-32s %-16s\n",
-                    result.getInt(1),
-                    result.getString(2),
-                    result.getString(3)
+        getStageStmt.setInt(1, mapID);
+        getStageStmt.setInt(2, stageNum);
+        ResultSet getStageRS = getStageStmt.executeQuery();
+        getStageRS.next();
+        int rowCount = getStageRS.getInt(1);
+        if (rowCount > 1) throw new TooManyResultsException();
+        else if (rowCount == 0) {
+            PreparedStatement insertStageStmt = conn.prepareStatement(
+                    "INSERT INTO Stage(MapID, StageNumber) VALUES " +
+                            "(?, ?)"
             );
+            insertStageStmt.setInt(1, mapID);
+            insertStageStmt.setInt(2, stageNum);
+            insertStageStmt.executeUpdate();
+            stageID = getLastInsertID();
+            System.out.printf("Missing stage \"MapID %d stage %d\" added to database (ID=%d).\n", mapID, stageNum, stageID);
         }
+        else {
+            stageID = getStageRS.getInt(2);
+        }
+        return stageID;
+    }
+
+    private static int initiateGameMode(String gameMode) throws SQLException {
+        int gameModeID;
+        PreparedStatement getGameModeStmt = conn.prepareStatement(
+                "SELECT COUNT(*), GameModeID FROM GameMode WHERE GameModeName = ?"
+        );
+        getGameModeStmt.setString(1, gameMode);
+        ResultSet getGameModeRS = getGameModeStmt.executeQuery();
+        getGameModeRS.next();
+        int rowCount = getGameModeRS.getInt(1);
+        if (rowCount > 1) throw new TooManyResultsException();
+        else if (rowCount == 0) {
+            PreparedStatement insertGameModeStmt = conn.prepareStatement(
+                    "INSERT INTO GameMode(GameModeName) VALUES (?)"
+            );
+            insertGameModeStmt.setString(1, gameMode);
+            insertGameModeStmt.executeUpdate();
+            gameModeID = getLastInsertID();
+            System.out.printf("Missing game mode \"%s\" added to database (ID=%d).\n", gameMode, gameModeID);
+        }
+        else {
+            gameModeID = getGameModeRS.getInt(2);
+        }
+        return gameModeID;
+    }
+
+    private static int initiateStageGameMode(int stageID, int gameModeID) throws SQLException {
+        int configurationID;
+        PreparedStatement getStageGameModeStmt = conn.prepareStatement(
+                "SELECT COUNT(*), ConfigurationID FROM StageGameMode WHERE StageID = ? AND GameModeID = ?"
+        );
+        getStageGameModeStmt.setInt(1, stageID);
+        getStageGameModeStmt.setInt(2, gameModeID);
+        ResultSet getStageGameModeRS = getStageGameModeStmt.executeQuery();
+        getStageGameModeRS.next();
+        int rowCount = getStageGameModeRS.getInt(1);
+        if (rowCount > 1) throw new TooManyResultsException();
+        else if (rowCount == 0) {
+            PreparedStatement insertStageGameModeStmt = conn.prepareStatement(
+                    "INSERT INTO StageGameMode(StageID, GameModeID) VALUES (?, ?)"
+            );
+            insertStageGameModeStmt.setInt(1, stageID);
+            insertStageGameModeStmt.setInt(2, gameModeID);
+            insertStageGameModeStmt.executeUpdate();
+            configurationID = getLastInsertID();
+            System.out.printf("Missing configuration \"StageID %d GameModeID %d\" added to database (ID=%d).\n", stageID, gameModeID, configurationID);
+        }
+        else {
+            configurationID = getStageGameModeRS.getInt(2);
+        }
+        return configurationID;
+    }
+
+    private static int initiateMatchup(String mapName, int stageNum, String gameMode, String bluMercenary, String redMercenary) throws SQLException {
+        int matchupID;
+        int mapID = initiateMap(mapName);
+        int stageID = initiateStage(mapID, stageNum);
+        int gameModeID = initiateGameMode(gameMode);
+        int configurationID = initiateStageGameMode(stageID, gameModeID);
+        int bluMercenaryID = getMercenaryDBID(bluMercenary);
+        int redMercenaryID = getMercenaryDBID(redMercenary);
+        PreparedStatement getMatchupStmt = conn.prepareStatement(
+                "SELECT COUNT(*), MatchupID FROM Matchup WHERE ConfigurationID = ? AND BluMercenaryID = ? AND RedMercenaryID = ?"
+        );
+        getMatchupStmt.setInt(1, configurationID);
+        getMatchupStmt.setInt(2, bluMercenaryID);
+        getMatchupStmt.setInt(3, redMercenaryID);
+        ResultSet getMatchupRS = getMatchupStmt.executeQuery();
+        getMatchupRS.next();
+        int rowCount = getMatchupRS.getInt(1);
+        if (rowCount > 1) throw new TooManyResultsException();
+        else if (rowCount == 0) {
+            PreparedStatement insertMatchupStmt = conn.prepareStatement(
+                    "INSERT INTO Matchup(ConfigurationID, BluMercenaryID, RedMercenaryID) VALUES " +
+                            "(?, ?, ?)"
+            );
+            insertMatchupStmt.setInt(1, configurationID);
+            insertMatchupStmt.setInt(2, bluMercenaryID);
+            insertMatchupStmt.setInt(3, redMercenaryID);
+            insertMatchupStmt.executeUpdate();
+            matchupID = getLastInsertID();
+            System.out.printf("Missing matchup \"ConfigurationID %d BLU %s vs. RED %s\" added to database (ID=%d).\n", configurationID, bluMercenary, redMercenary, matchupID);
+        }
+        else {
+            matchupID = getMatchupRS.getInt(2);
+        }
+        return matchupID;
     }
 
     static class LegacyConversion {
@@ -326,11 +393,10 @@ public class DBHandler {
 
     public static void main(String[] args) {
         try {
-//            insertTest();
-//            testQuery();
-//            testQuery1();
-            LegacyConversion.convertLegacyJSONToDB();
-//            incrementMatchups("cp_alloy_rc3", 1, 0, 0, 0, RED);
+//            LegacyConversion.convertLegacyJSONToDB();
+            incrementMatchups("koth_increment_test", 2, Constants.GAME_MODES[2], "SPY", "HEAVY", RED);
+//            incrementMatchups("koth_test_map3", 1, Constants.GAME_MODES[5], "Heavy", "Spy", BLU);
+//            decrementMatchups("koth_increment_test", 2, Constants.GAME_MODES[2], "SPY", "HEAVY", RED);
         }
         catch (SQLException ex) {
             System.out.println(ex.getMessage());
