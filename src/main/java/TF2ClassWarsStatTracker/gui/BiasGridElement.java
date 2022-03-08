@@ -12,6 +12,15 @@ public class BiasGridElement extends JButton {
     private boolean highlighted;
 
     public BiasGridElement() {
+        initialise();
+    }
+
+    public BiasGridElement(String text) {
+        setText(text);
+        initialise();
+    }
+
+    private void initialise() {
         highlighted = false;
         unhighlightedBgColor = getBackground();
         unhighlightedBorder = getBorder();

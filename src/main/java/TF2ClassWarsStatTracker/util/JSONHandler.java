@@ -1,7 +1,7 @@
 package TF2ClassWarsStatTracker.util;
 
 import TF2ClassWarsStatTracker.game.GameMap;
-import TF2ClassWarsStatTracker.game.GameModeGrid;
+import TF2ClassWarsStatTracker.game.ConfigurationGrid;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,7 +22,7 @@ public class JSONHandler {
         List<String[]> lines = FileHandler.readCSVLines(filename);
         int intsStartIndex = getIntegerStartIndex(lines);
         for (int gamemode=0; gamemode<5; gamemode++) {
-            GameModeGrid grid = new GameModeGrid();
+            ConfigurationGrid grid = new ConfigurationGrid();
             for (int row=0; row<9; row++) {
                 int[] lineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)));
                 int[] nextLineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)+1));

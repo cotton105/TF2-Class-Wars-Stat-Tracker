@@ -23,9 +23,9 @@ public class TrackingGUIJPanel extends JPanel {
 
     // TODO: Adjust method to accommodate setting Component fonts instead of just JComponents
     protected static void setDefaultFont(JComponent component, Font font) {
+        component.setFont(font);
         for (Component c : component.getComponents())
             if (c instanceof JComponent) {
-                c.setFont(font);
                 setDefaultFont((JComponent)c, font);
             }
     }

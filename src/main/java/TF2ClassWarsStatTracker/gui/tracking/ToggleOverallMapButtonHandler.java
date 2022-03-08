@@ -10,7 +10,7 @@ public class ToggleOverallMapButtonHandler implements ActionListener {
     public ToggleOverallMapButtonHandler(int startingState) throws Exception {
         if (startingState == VIEW_OVERALL) displayOverall = true;
         else if (startingState == VIEW_MAP) displayOverall = false;
-        else throw new Exception();
+        else throw new Exception("Invalid starting state.");
     }
 
     @Override

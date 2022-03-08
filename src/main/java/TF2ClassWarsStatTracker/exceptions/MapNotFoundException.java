@@ -1,6 +1,8 @@
 package TF2ClassWarsStatTracker.exceptions;
 
-public class MapNotFoundException extends Exception {
+import java.sql.SQLException;
+
+public class MapNotFoundException extends SQLException {
 
     public MapNotFoundException() {
         super();

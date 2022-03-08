@@ -1,13 +1,13 @@
 package TF2ClassWarsStatTracker.game;
 
-public class GameModeGrid {
+public class ConfigurationGrid {
     private final int[][][] mercenaryWins;  // [BLU Mercenary] [RED Mercenary] [{BLU Wins, RED Wins}]
 
-    public GameModeGrid() {
+    public ConfigurationGrid() {
         mercenaryWins = new int[9][9][2];
     }
 
-    public GameModeGrid(int[][][] mercenaryWins) {
+    public ConfigurationGrid(int[][][] mercenaryWins) {
         this.mercenaryWins = mercenaryWins;
     }
 
@@ -31,7 +31,7 @@ public class GameModeGrid {
         return mercenaryWins[bluMercenary][redMercenary];
     }
 
-    public static GameModeGrid getEmptyGrid() {
-        return new GameModeGrid();
+    public static ConfigurationGrid getEmptyGrid() {
+        return new ConfigurationGrid();
     }
 }

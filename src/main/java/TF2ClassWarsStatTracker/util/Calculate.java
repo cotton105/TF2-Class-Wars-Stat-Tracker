@@ -7,7 +7,7 @@ public class Calculate {
         if (x != 0 && y == 0)
             return -1;
         else
-            return (1-x/y)/(1+x/y);
+            return (1 - x / y) / (1 + x / y);
     }
 
     public static Color getColourScaledFromWhite(float weight, Color colour1, Color colour2) {
