@@ -11,6 +11,7 @@ public class GameModeSelectHandler implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        TrackerWindow.instance.setSelectedGameMode(gameMode);
+        if (e.getStateChange() == ItemEvent.SELECTED)
+            TrackerWindow.instance.setSelectedGameMode(gameMode);
     }
 }

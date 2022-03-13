@@ -13,7 +13,7 @@ public class MapDropdownSelectHandler implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        if (!mapBeingAdded) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
             ItemSelectable is = e.getItemSelectable();
             TrackerWindow.instance.setSelectedMap(selectedString(is));
             TrackerWindow.instance.setDisplayOverallMap(false);

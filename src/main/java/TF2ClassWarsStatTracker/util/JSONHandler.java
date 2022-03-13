@@ -2,6 +2,7 @@ package TF2ClassWarsStatTracker.util;
 
 import TF2ClassWarsStatTracker.game.GameMap;
 import TF2ClassWarsStatTracker.game.ConfigurationGrid;
+import TF2ClassWarsStatTracker.game.LegacyGameMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -119,13 +120,13 @@ public class JSONHandler {
         FileHandler.writeToJSONFile(maps, FileHandler.DEFAULT_MAPS_JSON);
     }
 
-    public static List<GameMap> gameMapsFromJSON() throws FileNotFoundException {
+    public static List<LegacyGameMap> gameMapsFromJSON() throws FileNotFoundException {
         Gson gson = new Gson();
-        List<GameMap> maps = new ArrayList<>();
+        List<LegacyGameMap> maps = new ArrayList<>();
         JsonArray jsonArray = FileHandler.readJSONArray(FileHandler.DEFAULT_MAPS_JSON);
         for (JsonElement mapElement : jsonArray) {
             JsonObject jsonMap = mapElement.getAsJsonObject();
-            maps.add(gson.fromJson(jsonMap, GameMap.class));
+            maps.add(gson.fromJson(jsonMap, LegacyGameMap.class));
         }
         return maps;
     }

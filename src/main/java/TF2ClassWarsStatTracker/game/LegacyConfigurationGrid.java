@@ -1,41 +1,14 @@
 package TF2ClassWarsStatTracker.game;
 
-public class ConfigurationGrid {
-    private String mapName;
-    private Integer stageNumber;
-    private String gameModeName;
+public class LegacyConfigurationGrid {
     private final int[][][] mercenaryWins;  // [BLU Mercenary] [RED Mercenary] [{BLU Wins, RED Wins}]
 
-    public ConfigurationGrid() {
+    public LegacyConfigurationGrid() {
         mercenaryWins = new int[9][9][2];
     }
 
-    public ConfigurationGrid(int[][][] mercenaryWins) {
+    public LegacyConfigurationGrid(int[][][] mercenaryWins) {
         this.mercenaryWins = mercenaryWins;
-    }
-
-    public String getMapName() {
-        return mapName;
-    }
-
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    public Integer getStageNumber() {
-        return stageNumber;
-    }
-
-    public void setStageNumber(int stageNumber) {
-        this.stageNumber = stageNumber;
-    }
-
-    public String getGameModeName() {
-        return gameModeName;
-    }
-
-    public void setGameModeName(String gameModeName) {
-        this.gameModeName = gameModeName;
     }
 
     public void setMercenaryWins(int bluMercenary, int redMercenary, int bluWins, int redWins) {
@@ -58,7 +31,7 @@ public class ConfigurationGrid {
         return mercenaryWins[bluMercenary][redMercenary];
     }
 
-    public static ConfigurationGrid getEmptyGrid() {
-        return new ConfigurationGrid();
+    public static LegacyConfigurationGrid getEmptyGrid() {
+        return new LegacyConfigurationGrid();
     }
 }

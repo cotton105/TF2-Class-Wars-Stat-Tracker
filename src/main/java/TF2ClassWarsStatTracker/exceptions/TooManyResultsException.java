@@ -8,7 +8,7 @@ public class TooManyResultsException extends SQLException {
         super();
     }
 
-    public TooManyResultsException(String s) {
-        super(s);
+    public TooManyResultsException(String query) {
+        super(query);
     }
 }
