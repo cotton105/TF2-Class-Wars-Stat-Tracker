@@ -14,8 +14,8 @@ public class TestDatabase {
     @Before
     public void createDatabaseConnection() throws SQLException {
         String cwd = System.getProperty("user.dir");
-        String testDbLocation = "jdbc:sqlite:" + cwd + "\\src\\test\\res\\TestClassWarsMatchups.db";
-        String realDbLocation = "jdbc:sqlite:" + cwd + "\\db\\SQLite\\ClassWarsMatchups.db";
+        String testDbLocation = "jdbc:sqlite:" + cwd + "/src/test/res/TestClassWarsMatchups.db";
+        String realDbLocation = "jdbc:sqlite:" + cwd + "/db/SQLite/ClassWarsMatchups.db";
         DBHandler.setSQLiteConnection(realDbLocation);
 //        conn = DriverManager.getConnection(realDbLocation);
     }
