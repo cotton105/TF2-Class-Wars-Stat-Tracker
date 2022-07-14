@@ -16,8 +16,8 @@ public class LegacyConvertJSONToDB {
 
     static {
         try {
-            FileHandler.createDirectory(PROGRAM_DIR + "\\db\\SQLite");
-            String dbStorageDir = "jdbc:sqlite:" + PROGRAM_DIR + "\\db\\SQLite\\ClassWarsMatchups.db";
+            FileHandler.createDirectory(PROGRAM_DIR + "/db/SQLite");
+            String dbStorageDir = "jdbc:sqlite:" + PROGRAM_DIR + "/db/SQLite/ClassWarsMatchups.db";
             conn = DriverManager.getConnection(dbStorageDir);
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();

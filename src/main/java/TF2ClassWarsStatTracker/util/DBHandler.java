@@ -22,7 +22,7 @@ public class DBHandler {
 
     static {
         try {
-            String dbStorageDir = PROGRAM_DIR + "\\db\\SQLite\\ClassWarsMatchups.db";
+            String dbStorageDir = PROGRAM_DIR + "/db/SQLite/ClassWarsMatchups.db";
             setSQLiteConnection(dbStorageDir);
             MERCENARY_ID = Retrieve.getMercenaryIDMap();
         } catch (SQLException ex) {
