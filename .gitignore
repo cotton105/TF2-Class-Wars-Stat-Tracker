@@ -1,5 +1,11 @@
 # Project exclude paths
-/out/
-/.idea/
+# IDE files
 *.iml
+
+# Directories
+/.idea/
+/out/
+/target/
+
+# Specific files
 /src/main/resources/maps.json
