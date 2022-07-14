@@ -2,7 +2,7 @@ package TF2ClassWarsStatTracker;
 
 import TF2ClassWarsStatTracker.gui.MenuItemHandler;
 import TF2ClassWarsStatTracker.gui.mainmenu.MainMenu;
-import TF2ClassWarsStatTracker.gui.tracking.TrackerWindow;
+import TF2ClassWarsStatTracker.gui.tracking.StatWindow;
 import TF2ClassWarsStatTracker.util.Print;
 
 import javax.swing.*;
@@ -11,17 +11,23 @@ public class Start {
     private static final int WIDTH = 400, HEIGHT = 400;
     private static JFrame frame;
     private static final JComponent mainMenu = new MainMenu();
+    private static final StatWindow trackerWindow = new StatWindow();
     private static ServerDataRetrieval serverDataRetrieval;
 
     public static void main(String[] args) {
-        serverDataRetrieval = new ServerDataRetrieval();
+//        serverDataRetrieval = new ServerDataRetrieval();
         javax.swing.SwingUtilities.invokeLater(Start::initGUI);
+    }
+
+    public static void viewTrackerWindow() {
+        setActiveContentPane(trackerWindow.getPanMain());
     }
 
     private static void initGUI() {
         frame = new JFrame("TF2 Class Wars Stat Tracker");
-        initMenuBar();
-        TrackerWindow.initialise();
+        frame.setJMenuBar(generateMenuBar());
+        generateMenuBar();
+//        TrackerWindow.initialise();
         setActiveContentPane(mainMenu);
 
         frame.setResizable(false);
@@ -29,7 +35,7 @@ public class Start {
         frame.setVisible(true);
     }
 
-    private static void initMenuBar() {
+    private static JMenuBar generateMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
         menuBar.add(getFileMenu());
@@ -37,7 +43,8 @@ public class Start {
         menuBar.add(getServerMenu());
         menuBar.add(getMapsMenu());
 
-        frame.setJMenuBar(menuBar);
+//        frame.setJMenuBar(menuBar);
+        return menuBar;
     }
 
     private static JMenu getFileMenu() {
