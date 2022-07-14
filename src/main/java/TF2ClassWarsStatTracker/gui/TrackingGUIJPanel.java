@@ -9,7 +9,7 @@ public class TrackingGUIJPanel extends JPanel {
     protected static Font TF2secondary;
     static {
         try {
-            TF2secondary = Font.createFont(Font.TRUETYPE_FONT, new File("res\\fonts\\TF2secondary.ttf"));
+            TF2secondary = Font.createFont(Font.TRUETYPE_FONT, new File("res/fonts/TF2secondary.ttf"));
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(TF2secondary);
         } catch (IOException | FontFormatException ex) {
