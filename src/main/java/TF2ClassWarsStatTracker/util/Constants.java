@@ -20,4 +20,5 @@ public class Constants {
                 "Normal", "Global Rolls",
                 "Madness", "Multiply Weapons' Stats",
                 "Good Rolls"};
+    public static final String NORMAL_GAME_MODE = "Normal";
 }

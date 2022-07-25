@@ -62,13 +62,14 @@
                     <constraints border-constraint="Center"/>
                     <properties>
                       <minimumSize width="-1" height="-1"/>
+                      <preferredSize width="304" height="20"/>
                     </properties>
                     <border type="none"/>
                     <children>
                       <component id="22c42" class="javax.swing.JButton" default-binding="true">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="100" height="39"/>
+                            <preferred-size width="100" height="-1"/>
                           </grid>
                         </constraints>
                         <properties>
@@ -80,7 +81,7 @@
                       <component id="bf215" class="javax.swing.JButton" default-binding="true">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="100" height="39"/>
+                            <preferred-size width="100" height="-1"/>
                           </grid>
                         </constraints>
                         <properties>
@@ -92,7 +93,7 @@
                       <component id="770e2" class="javax.swing.JButton" default-binding="true">
                         <constraints>
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="100" height="39"/>
+                            <preferred-size width="100" height="-1"/>
                           </grid>
                         </constraints>
                         <properties>
@@ -183,7 +184,7 @@
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="de65d" class="javax.swing.JLabel">
+                      <component id="de65d" class="javax.swing.JLabel" binding="labBluGamesWon">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -236,7 +237,7 @@
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="dda6c" class="javax.swing.JLabel">
+                      <component id="dda6c" class="javax.swing.JLabel" binding="labRedGamesWon">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -249,7 +250,10 @@
                   <grid id="e1a6f" binding="panRedClassSelectGrid" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints border-constraint="Center"/>
-                    <properties/>
+                    <properties>
+                      <minimumSize width="-1" height="-1"/>
+                      <preferredSize width="304" height="20"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="93fcb" class="javax.swing.JButton" default-binding="true">
@@ -657,7 +661,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="1.0"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="47569" class="javax.swing.JButton" default-binding="true">
@@ -670,7 +674,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="0.5"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="4165d" class="javax.swing.JButton" default-binding="true">
@@ -683,7 +687,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="0.33"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="320d8" class="javax.swing.JButton" default-binding="true">
@@ -696,7 +700,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="0.0"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="1115a" class="javax.swing.JButton" default-binding="true">
@@ -709,7 +713,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="-0.33"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="89dd9" class="javax.swing.JButton" default-binding="true">
@@ -722,7 +726,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="-0.5"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="40f9a" class="javax.swing.JButton" default-binding="true">
@@ -735,7 +739,7 @@
                       <background color="-1"/>
                       <borderPainted value="true"/>
                       <opaque value="true"/>
-                      <text value="-1.0"/>
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="c66" class="javax.swing.JButton" default-binding="true">
@@ -1716,7 +1720,7 @@
               </component>
             </children>
           </grid>
-          <grid id="dd23c" binding="panGridHeader" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="dd23c" binding="panGridHeader" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -1724,13 +1728,19 @@
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="53c29" binding="panMapSelect" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+              <grid id="53c29" binding="panMapSelect" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
+                  <component id="c4c23" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Map"/>
+                    </properties>
+                  </component>
                   <component id="bd3f9" class="javax.swing.JComboBox" binding="comboMapSelect">
                     <constraints/>
                     <properties>
@@ -1741,19 +1751,55 @@
                   <component id="c03e0" class="javax.swing.JButton" binding="butToggleOverallMap">
                     <constraints/>
                     <properties>
-                      <text value="View Selected Map"/>
+                      <text value="View Selected"/>
                     </properties>
                   </component>
                 </children>
               </grid>
-              <grid id="9b80d" binding="panGameModeSelect" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+              <grid id="9b80d" binding="panGameModeSelect" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
-                <children/>
+                <children>
+                  <component id="8e60f" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Gamemode"/>
+                    </properties>
+                  </component>
+                  <component id="b6006" class="javax.swing.JComboBox" binding="comboGameModeSelect">
+                    <constraints/>
+                    <properties>
+                      <preferredSize width="200" height="30"/>
+                    </properties>
+                  </component>
+                  <component id="9f335" class="javax.swing.JButton" binding="butToggleOverallGameMode">
+                    <constraints/>
+                    <properties>
+                      <text value="View Selected"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="8a865" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="91626" class="javax.swing.JLabel" binding="labTotalGamesPlayed">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Total games recorded in this configuration: "/>
+                    </properties>
+                  </component>
+                </children>
               </grid>
             </children>
           </grid>

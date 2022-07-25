@@ -19,23 +19,25 @@ public class JSONHandler {
             MERCENARY_WINS = "mercenaryWins";
 
     public static GameMap getGameMapFromCSV(String filename) throws IOException {
-        GameMap map = new GameMap(FileHandler.removeFileExtension(filename));
-        List<String[]> lines = FileHandler.readCSVLines(filename);
-        int intsStartIndex = getIntegerStartIndex(lines);
-        for (int gamemode=0; gamemode<5; gamemode++) {
-            ConfigurationGrid grid = new ConfigurationGrid();
-            for (int row=0; row<9; row++) {
-                int[] lineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)));
-                int[] nextLineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)+1));
-                for (int column=0; column<9; column++) {
-                    int bluWins = lineTrimmed[column + (9 * gamemode)]-1;
-                    int redWins = nextLineTrimmed[column + (9 * gamemode)]-1;
-                    grid.setMercenaryWins(column, row, bluWins, redWins);
-                }
-            }
-            map.addGameModeGrid(grid);
-        }
-        return map;
+        Print.error("'getGameMapFromCSV' has been temporarily disabled.");
+        return null;
+//        GameMap map = new GameMap(FileHandler.removeFileExtension(filename));
+//        List<String[]> lines = FileHandler.readCSVLines(filename);
+//        int intsStartIndex = getIntegerStartIndex(lines);
+//        for (int gamemode=0; gamemode<5; gamemode++) {
+//            ConfigurationGrid grid = new ConfigurationGrid();
+//            for (int row=0; row<9; row++) {
+//                int[] lineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)));
+//                int[] nextLineTrimmed = trimLineToInts(lines.get(intsStartIndex+(row*2)+1));
+//                for (int column=0; column<9; column++) {
+//                    int bluWins = lineTrimmed[column + (9 * gamemode)]-1;
+//                    int redWins = nextLineTrimmed[column + (9 * gamemode)]-1;
+//                    grid.setMercenaryWins(column, row, bluWins, redWins);
+//                }
+//            }
+//            map.addGameModeGrid(grid);
+//        }
+//        return map;
     }
 
     private static JsonArray getMatchupArr(JsonArray mapsArr, String mapName, int gameMode, int bluMercenary, int redMercenary) {

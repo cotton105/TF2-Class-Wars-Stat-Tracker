@@ -119,25 +119,26 @@ public class DBHandler {
         public static int[] getMatchupWins(String bluMercenary, String redMercenary, String mapName, int stageNumber, String gameModeName) throws SQLException {
             if (countMatchingMaps(mapName) == 0) throw new MapNotFoundException(mapName);
             int[] wins = new int[2];
-            String query = "SELECT SUM(mtch.BluWins), SUM(mtch.RedWins) " +
-                    "FROM Matchup mtch " +
-                    "JOIN Mercenary blu ON blu.MercenaryID = mtch.BluMercenaryID " +
-                    "JOIN Mercenary red ON red.MercenaryID = mtch.RedMercenaryID " +
-                    "JOIN StageGameMode sgm ON sgm.ConfigurationID = mtch.ConfigurationID " +
-                    "JOIN Stage s ON s.StageID = sgm.StageID " +
-                    "JOIN Map mp ON mp.MapID = s.StageID " +
-                    "JOIN GameMode g ON g.GameModeID = sgm.GameModeID " +
-                    "WHERE blu.MercenaryName = ? AND red.MercenaryName = ? AND mp.MapName = ? AND s.StageNumber = ? AND g.GameModeName = ?";
-            try (PreparedStatement getMatchupWinsStmt = conn.prepareStatement(query)) {
-                getMatchupWinsStmt.setString(1, bluMercenary);
-                getMatchupWinsStmt.setString(2, redMercenary);
-                getMatchupWinsStmt.setString(3, mapName);
-                getMatchupWinsStmt.setInt(4, stageNumber);
-                getMatchupWinsStmt.setString(5, gameModeName);
-                ResultSet getMatchupWinsRS = getMatchupWinsStmt.executeQuery();
-                getMatchupWinsRS.next();
-                wins[BLU] = getMatchupWinsRS.getInt(1);
-                wins[RED] = getMatchupWinsRS.getInt(2);
+            String query =
+                    "SELECT SUM(mtch.BluWins), SUM(mtch.RedWins) " +
+                        "FROM Matchup mtch " +
+                            "JOIN Mercenary blu ON blu.MercenaryID = mtch.BluMercenaryID " +
+                            "JOIN Mercenary red ON red.MercenaryID = mtch.RedMercenaryID " +
+                            "JOIN StageGameMode sgm ON sgm.ConfigurationID = mtch.ConfigurationID " +
+                            "JOIN Stage s ON s.StageID = sgm.StageID " +
+                            "JOIN Map mp ON mp.MapID = s.MapID " +
+                            "JOIN GameMode g ON g.GameModeID = sgm.GameModeID " +
+                        "WHERE blu.MercenaryName = ? AND red.MercenaryName = ? AND mp.MapName = ? AND s.StageNumber = ? AND g.GameModeName = ?";
+            try (PreparedStatement statement = conn.prepareStatement(query)) {
+                statement.setString(1, bluMercenary);
+                statement.setString(2, redMercenary);
+                statement.setString(3, mapName);
+                statement.setInt(4, stageNumber);
+                statement.setString(5, gameModeName);
+                ResultSet resultSet = statement.executeQuery();
+                resultSet.next();
+                wins[BLU] = resultSet.getInt(1);
+                wins[RED] = resultSet.getInt(2);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -274,8 +275,7 @@ public class DBHandler {
         }
 
         public static int getTotalGameCount() throws SQLException {
-            String query = "SELECT SUM(BluWins) " +
-                    "+ SUM(RedWins) " +
+            String query = "SELECT SUM(BluWins) + SUM(RedWins) " +
                     "+ (SELECT SUM(BluWins) + SUM(RedWins) FROM LegacyMatchup) " +
                     "FROM Matchup";
             try (PreparedStatement getTotalGameCountStmt = conn.prepareStatement(query)) {
@@ -388,20 +388,6 @@ public class DBHandler {
             }
         }
 
-        public static List<String> getGameModeNames() {
-            List<String> names = new ArrayList<>();
-            String query = "SELECT GameModeName FROM GameMode";
-            try (ResultSet getGameModeNamesRS = conn.createStatement().executeQuery(query)) {
-                while (getGameModeNamesRS.next()) {
-                    names.add(getGameModeNamesRS.getString(1));
-                }
-                return names;
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                return names;
-            }
-        }
-
         public static List<String> getMapNames() throws SQLException {
             List<String> mapNames = new ArrayList<>();
             try (ResultSet mapNamesRS = conn.createStatement().executeQuery("SELECT MapName FROM Map")) {
@@ -409,6 +395,17 @@ public class DBHandler {
                     mapNames.add(mapNamesRS.getString(1));
                 }
                 return mapNames;
+            }
+        }
+
+        public static List<String> getGameModeNames() throws SQLException {
+            List<String> names = new ArrayList<>();
+            String query = "SELECT GameModeName FROM GameMode";
+            try (ResultSet getGameModeNamesRS = conn.createStatement().executeQuery(query)) {
+                while (getGameModeNamesRS.next()) {
+                    names.add(getGameModeNamesRS.getString(1));
+                }
+                return names;
             }
         }
     }

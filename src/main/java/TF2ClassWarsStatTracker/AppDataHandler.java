@@ -119,4 +119,8 @@ public class AppDataHandler {
     private static String getLastAction() {
         return ACTION_HISTORY.get(ACTION_HISTORY.size()-1);
     }
+
+    public static List<String> getGameModeNames() {
+        return null;
+    }
 }
